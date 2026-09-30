@@ -1,0 +1,58 @@
+{
+  "pop": {
+    "ja": "HGP創英角ﾎﾟｯﾌﾟ体",
+    "ps": "HGPSoeiKakupoptai",
+    "hints": ["HGPSoeiKakupoptai", "HGP創英角ﾎﾟｯﾌﾟ体", "HGP創英角ポップ体"],
+    "preview": {"family": "Mochiy Pop P One", "weight": 400, "google": "Mochiy Pop P One"},
+    "use": "キャッチ・煽り文句（甘さ増し増し！／はじけだす！）"
+  },
+  "kakugo-ub": {
+    "ja": "HGP創英角ｺﾞｼｯｸUB",
+    "ps": "HGPSoeiKakugothicUB",
+    "hints": ["HGPSoeiKakugothicUB", "HGP創英角ｺﾞｼｯｸUB", "HGP創英角ゴシックUB"],
+    "preview": {"family": "Noto Sans JP", "weight": 900, "google": "Noto Sans JP:wght@500;700;900"},
+    "use": "大見出し・商品名・産地リボン"
+  },
+  "gothic-e": {
+    "ja": "HGPｺﾞｼｯｸE",
+    "ps": "HGPGothicE",
+    "hints": ["HGPGothicE", "HGPｺﾞｼｯｸE", "HGPゴシックE"],
+    "preview": {"family": "Noto Sans JP", "weight": 900, "google": "Noto Sans JP:wght@500;700;900"},
+    "use": "価格・数字・太い見出し"
+  },
+  "maru": {
+    "ja": "HG丸ｺﾞｼｯｸM-PRO",
+    "ps": "HGMaruGothicMPRO",
+    "hints": ["HGMaruGothicMPRO", "HG丸ｺﾞｼｯｸM-PRO", "HG丸ゴシックM-PRO"],
+    "preview": {"family": "Zen Maru Gothic", "weight": 700, "google": "Zen Maru Gothic:wght@700"},
+    "use": "やわらかい説明文・子ども向け"
+  },
+  "presence": {
+    "ja": "HGP創英ﾌﾟﾚｾﾞﾝｽEB",
+    "ps": "HGPSoeiPresenceEB",
+    "hints": ["HGPSoeiPresenceEB", "HGP創英ﾌﾟﾚｾﾞﾝｽEB", "HGP創英プレゼンスEB"],
+    "preview": {"family": "Shippori Mincho B1", "weight": 800, "google": "Shippori Mincho B1:wght@800"},
+    "use": "高級感・和の見出し（明朝の太字）"
+  },
+  "mincho-e": {
+    "ja": "HGP明朝E",
+    "ps": "HGPMinchoE",
+    "hints": ["HGPMinchoE", "HGP明朝E"],
+    "preview": {"family": "Shippori Mincho B1", "weight": 800, "google": "Shippori Mincho B1:wght@800"},
+    "use": "上品な見出し・和菓子・贈答"
+  },
+  "gyosho": {
+    "ja": "HGP行書体",
+    "ps": "HGPGyoshotai",
+    "hints": ["HGPGyoshotai", "HGP行書体"],
+    "preview": {"family": "Yuji Syuku", "weight": 400, "google": "Yuji Syuku"},
+    "use": "筆文字風（新米・鍋・年末）"
+  },
+  "meiryo-b": {
+    "ja": "メイリオ ボールド",
+    "ps": "Meiryo-Bold",
+    "hints": ["Meiryo-Bold", "メイリオ"],
+    "preview": {"family": "Noto Sans JP", "weight": 700, "google": "Noto Sans JP:wght@500;700;900"},
+    "use": "本文・注意書き・小さい文字"
+  }
+}

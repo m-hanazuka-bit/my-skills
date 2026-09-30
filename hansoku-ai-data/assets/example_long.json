@@ -1,0 +1,13 @@
+{"name":"POPコーン_長尺縦","size":"300x864縦","bleed":3,"background":"#29B6F6",
+ "layers":[
+  {"name":"装飾","items":[
+   {"type":"rays","cx":150,"cy":420,"r1":20,"r2":600,"n":28,"spread":4,"fill":"#FFFFFF","opacity":0.25},
+   {"type":"star","cx":150,"cy":420,"r":120,"inner":0.6,"n":14,"fill":"#FFF04A"},
+   {"type":"dots","x":10,"y":20,"w":90,"h":80,"step":6,"r":1.6,"fade":"right","fill":"#FFF04A"},
+   {"type":"path","d":"M20 700 Q150 640 280 700 L280 800 Q150 860 20 800 Z","fill":"#FFFFFF","stroke":"#0D47A1","strokeWidth":2},
+   {"type":"rect","x":0,"y":820,"w":300,"h":44,"fill":"#0D47A1"}]},
+  {"name":"文字","items":[
+   {"type":"text","text":"おやつ時間が、","font":"kakugo-ub","size":34,"x":150,"y":40,"color":"#0D47A1","outlines":[{"color":"#FFFFFF","width":2.5}],"maxWidth":270},
+   {"type":"text","text":"はじけだす！","font":"pop","size":60,"vertical":true,"x":150,"y":250,"align":"top","color":"#FFFFFF","outlines":[{"color":"#0D47A1","width":4}]},
+   {"type":"text","lines":["POPコーン 塩","みんなで、ひとつまみ。"],"font":"maru","size":22,"lineHeight":1.5,"x":150,"y":715,"color":"#0D47A1","maxWidth":230},
+   {"type":"text","text":"お菓子売場","font":"meiryo-b","size":20,"x":150,"y":830,"color":"#FFFFFF"}]}]}

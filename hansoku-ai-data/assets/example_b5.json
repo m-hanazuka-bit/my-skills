@@ -1,0 +1,460 @@
+{
+ "name": "シャインマスカット_B5横",
+ "size": "B5横",
+ "bleed": 0,
+ "meta": {
+  "展開場所": "ぶどう売場",
+  "期間": "〜10/15"
+ },
+ "notes": [
+  "images/ の写真は差し替えて使う（文字の入っていない写真）"
+ ],
+ "layers": [
+  {
+   "name": "背景",
+   "items": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 257,
+     "h": 182,
+     "fill": {
+      "type": "linear",
+      "angle": 90,
+      "stops": [
+       [
+        0,
+        "#FFFBE0"
+       ],
+       [
+        1,
+        "#FFF3B8"
+       ]
+      ]
+     }
+    },
+    {
+     "type": "ellipse",
+     "cx": 140,
+     "cy": 95,
+     "rx": 75,
+     "ry": 70,
+     "fill": {
+      "type": "radial",
+      "stops": [
+       [
+        0,
+        "#FFFFFF",
+        0.9
+       ],
+       [
+        1,
+        "#FFFFFF",
+        0
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "name": "写真",
+   "items": [
+    {
+     "type": "image",
+     "src": "images/grape.png",
+     "x": 0,
+     "y": 0,
+     "w": 81,
+     "h": 182,
+     "fit": "cover"
+    },
+    {
+     "type": "image",
+     "src": "images/farmer.png",
+     "x": 206,
+     "y": 0,
+     "w": 51,
+     "h": 182,
+     "fit": "cover"
+    }
+   ]
+  },
+  {
+   "name": "装飾",
+   "items": [
+    {
+     "type": "ribbon",
+     "x": 88,
+     "y": 7,
+     "w": 115,
+     "h": 16,
+     "fill": "#0A5A2A",
+     "tailFill": "#06401D",
+     "stroke": "#FFFFFF",
+     "strokeWidth": 0.6
+    },
+    {
+     "type": "polygon",
+     "fill": "#FFEC4E",
+     "points": [
+      [
+       92,
+       38
+      ],
+      [
+       100,
+       29
+      ],
+      [
+       150,
+       27.5
+      ],
+      [
+       196,
+       29
+      ],
+      [
+       200,
+       36
+      ],
+      [
+       192,
+       43
+      ],
+      [
+       140,
+       44
+      ],
+      [
+       98,
+       45
+      ]
+     ]
+    },
+    {
+     "type": "ellipse",
+     "cx": 136,
+     "cy": 104,
+     "rx": 62,
+     "ry": 27,
+     "fill": "#FFFDF0",
+     "stroke": "#FFE54A",
+     "strokeWidth": 2.2
+    },
+    {
+     "type": "polygon",
+     "fill": "#FF7A1A",
+     "points": [
+      [
+       80,
+       84
+      ],
+      [
+       86,
+       83
+      ],
+      [
+       84,
+       92
+      ]
+     ]
+    },
+    {
+     "type": "polygon",
+     "fill": "#FF7A1A",
+     "points": [
+      [
+       190,
+       76
+      ],
+      [
+       196,
+       72
+      ],
+      [
+       193,
+       83
+      ]
+     ]
+    },
+    {
+     "type": "polygon",
+     "fill": "#FF7A1A",
+     "points": [
+      [
+       197,
+       83
+      ],
+      [
+       204,
+       81
+      ],
+      [
+       198,
+       88
+      ]
+     ]
+    },
+    {
+     "type": "path",
+     "d": "M52 162 C55 145 62 133 75 128 L185 128 C196 133 200 145 202 162 Z",
+     "fill": "#FFFBE6",
+     "stroke": "#FFE54A",
+     "strokeWidth": 2.4
+    },
+    {
+     "type": "dots",
+     "x": 72,
+     "y": 145.3,
+     "w": 110,
+     "h": 0.1,
+     "step": 2.2,
+     "r": 0.35,
+     "fill": "#B99A6B"
+    },
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 161,
+     "w": 257,
+     "h": 21,
+     "fill": {
+      "type": "linear",
+      "angle": 0,
+      "stops": [
+       [
+        0,
+        "#034C24"
+       ],
+       [
+        1,
+        "#0A6B30"
+       ]
+      ]
+     }
+    },
+    {
+     "type": "polygon",
+     "fill": "#FFD83A",
+     "points": [
+      [
+       12,
+       168
+      ],
+      [
+       20,
+       171
+      ],
+      [
+       12,
+       174
+      ]
+     ]
+    },
+    {
+     "type": "polygon",
+     "fill": "#FFD83A",
+     "points": [
+      [
+       245,
+       168
+      ],
+      [
+       237,
+       171
+      ],
+      [
+       245,
+       174
+      ]
+     ]
+    },
+    {
+     "type": "star",
+     "cx": 225,
+     "cy": 150,
+     "r": 24,
+     "ry": 14,
+     "inner": 0.9,
+     "n": 18,
+     "fill": "#2F8C3A"
+    },
+    {
+     "type": "ellipse",
+     "cx": 225,
+     "cy": 152,
+     "rx": 21,
+     "ry": 10.5,
+     "fill": "#FFFFFF",
+     "stroke": "#0A5A2A",
+     "strokeWidth": 1.2
+    },
+    {
+     "type": "rect",
+     "x": 210,
+     "y": 135.5,
+     "w": 30,
+     "h": 7,
+     "r": 3.5,
+     "fill": "#0A5A2A"
+    }
+   ]
+  },
+  {
+   "name": "文字",
+   "items": [
+    {
+     "type": "text",
+     "text": "長野県高山村産",
+     "font": "kakugo-ub",
+     "size": 10.5,
+     "x": 145.5,
+     "y": 9.5,
+     "color": "#FFFFFF",
+     "maxWidth": 100
+    },
+    {
+     "type": "text",
+     "text": "黄色く熟した",
+     "font": "kakugo-ub",
+     "size": 13.5,
+     "x": 146,
+     "y": 28.5,
+     "color": "#4A2511",
+     "outlines": [
+      {
+       "color": "#FFFFFF",
+       "width": 0.9
+      }
+     ],
+     "maxWidth": 100
+    },
+    {
+     "type": "text",
+     "text": "シャインマスカット",
+     "font": "kakugo-ub",
+     "size": 20,
+     "x": 146,
+     "y": 47,
+     "color": "#0B6B2E",
+     "outlines": [
+      {
+       "color": "#FFFFFF",
+       "width": 1.2
+      },
+      {
+       "color": "#DCEFB0",
+       "width": 0.6
+      }
+     ],
+     "maxWidth": 140
+    },
+    {
+     "type": "text",
+     "text": "黄色いシャインマスカットは",
+     "font": "kakugo-ub",
+     "size": 7,
+     "x": 136,
+     "y": 82,
+     "color": "#3B1E0E",
+     "maxWidth": 100,
+     "rotate": -2
+    },
+    {
+     "type": "text",
+     "text": "甘さ増し増し！",
+     "font": "pop",
+     "size": 21,
+     "x": 136,
+     "y": 92,
+     "color": {
+      "type": "linear",
+      "angle": 90,
+      "stops": [
+       [
+        0,
+        "#F2262E"
+       ],
+       [
+        1,
+        "#C80A14"
+       ]
+      ]
+     },
+     "outlines": [
+      {
+       "color": "#FFFFFF",
+       "width": 1.3
+      },
+      {
+       "color": "#FFD83A",
+       "width": 0.9
+      }
+     ],
+     "shadow": {
+      "dx": 0.8,
+      "dy": 1.0,
+      "color": "#7A4A00"
+     },
+     "maxWidth": 118,
+     "rotate": -3
+    },
+    {
+     "type": "text",
+     "lines": [
+      "熟度をあげて収穫しました。",
+      "日持ちよりもおいしさを優先しています。"
+     ],
+     "font": "meiryo-b",
+     "size": 6.2,
+     "lineHeight": 1.75,
+     "x": 127,
+     "y": 134.5,
+     "color": "#4A2511",
+     "maxWidth": 128
+    },
+    {
+     "type": "text",
+     "text": "生産者指定",
+     "font": "kakugo-ub",
+     "size": 4.8,
+     "x": 225,
+     "y": 136.6,
+     "color": "#FFFFFF"
+    },
+    {
+     "type": "text",
+     "lines": [
+      [
+       {
+        "t": "松本",
+        "size": 9
+       },
+       {
+        "t": "さん",
+        "size": 6
+       }
+      ]
+     ],
+     "font": "kakugo-ub",
+     "size": 9,
+     "x": 225,
+     "y": 145,
+     "color": "#1F3D12"
+    },
+    {
+     "type": "text",
+     "text": "お買い上げ後はお早めにお召し上がりください。",
+     "font": "kakugo-ub",
+     "size": 7.2,
+     "x": 128.5,
+     "y": 167.5,
+     "color": "#FFFFFF",
+     "maxWidth": 210
+    }
+   ]
+  }
+ ]
+}
