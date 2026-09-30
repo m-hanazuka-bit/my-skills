@@ -1,0 +1,72 @@
+{
+ "character": "gu",
+ "tagline": "くらしにベルク",
+ "product": {
+  "name": "酪農牛乳",
+  "spec": "1000ml",
+  "image": "product.png",
+  "points": [
+   "成分無調整",
+   "生乳100%使用"
+  ],
+  "price_text": ""
+ },
+ "lines": [
+  {
+   "id": "n01",
+   "text": "おっ、ちょお待ってや！",
+   "emotion": "tame",
+   "scene": "hook",
+   "scene_opts": {
+    "text": "ぐぅの/*イチオシ*"
+   }
+  },
+  {
+   "id": "n02",
+   "text": "俺が見つけてきた、*酪農牛乳*やで！",
+   "emotion": "doya",
+   "scene": "photo",
+   "scene_opts": {
+    "image": "scene_shelf_gu_garbled.webp",
+    "cover": {
+     "x": 0.235,
+     "y": 0.385,
+     "w": 0.135,
+     "h": 0.54,
+     "rot": -2
+    },
+    "focus": [
+     0.42,
+     0.5
+    ]
+   }
+  },
+  {
+   "id": "n03",
+   "text": "*成分無調整*、生乳100%使用や！",
+   "emotion": "hype",
+   "scene": "point",
+   "scene_opts": {
+    "point": "*成分無調整*",
+    "sub": "生乳100%使用"
+   }
+  },
+  {
+   "id": "n04",
+   "text": "牧場のうまさ、そのまんまやねん。",
+   "emotion": "sneaky",
+   "scene": "photo",
+   "scene_opts": {
+    "image": "scene_farm_gu.webp",
+    "text": "牧場の/*うまさ*そのまんま"
+   }
+  },
+  {
+   "id": "n05",
+   "text": "1000ml、ほんまにおすすめやで！",
+   "emotion": "shime",
+   "scene": "closing",
+   "read": "せんミリリットル、ほんまにおすすめやで！"
+  }
+ ]
+}

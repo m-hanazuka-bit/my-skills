@@ -1,0 +1,322 @@
+<!doctype html>
+<!--
+  キャラクター商品紹介のテンプレート（make_video.py が timeline.json を注入して 1 フレームずつ撮る）。
+  ルール：動きは必ず seek(t) の中で時刻から計算する。CSS アニメ・requestAnimationFrame は使わない。
+
+  TIMELINE.data:
+    character { id, name, look{palette, display_font, caption, name_tag, pattern}, motion{...}, images{main, side, scenes} }
+    product   { name, spec, image, points[], price_text, note }
+    tagline   "くらしにベルク"
+    emotions  { lineId: emotion }
+  scenes[].type:
+    hook     キャラが大きく登場＋ひとこと（text）
+    product  実物パッケージが回転しながら登場、商品名と規格
+    point    パッケージ＋推しポイントを特大で（point, sub）
+    photo    シーン画像を全面に（image）。cover:{x,y,w,h,rot} で画像内の崩れた商品を実物写真で上書き
+    closing  商品・名前・規格・ポイント・価格・タグラインで締め、キャラが手を振る
+  文字は *強調* でアクセント色。
+-->
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link href="fonts/fonts.css" rel="stylesheet">
+<style>
+  :root { --u:1px; --bg:#ff5c8a; --primary:#e8336f; --accent:#ffe14d; --light:#fff; --text:#fff; --sub:#7fcdee;
+          --display:"Dela Gothic One","Noto Sans JP",sans-serif; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { overflow:hidden; background:var(--bg); }
+  #stage { position:absolute; inset:0; overflow:hidden; font-family:"Noto Sans JP",sans-serif; color:var(--text); }
+  .abs { position:absolute; }
+  .layer { position:absolute; inset:0; }
+  #bg { background:radial-gradient(ellipse at 50% 40%, color-mix(in srgb, var(--light) 28%, var(--bg)) 0%, var(--bg) 70%); }
+  #pattern.stripes { background:repeating-linear-gradient(90deg, transparent 0 calc(var(--u)*70), color-mix(in srgb, var(--sub) 45%, transparent) calc(var(--u)*70) calc(var(--u)*140)); opacity:.35; }
+  #pattern.dots { background-image:radial-gradient(circle, color-mix(in srgb, var(--sub) 80%, transparent) calc(var(--u)*7), transparent calc(var(--u)*8)); background-size:calc(var(--u)*64) calc(var(--u)*64); opacity:.8; }
+  #photo, #photo img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  #photo { opacity:0; overflow:hidden; }
+  #cover { opacity:0; filter:drop-shadow(0 calc(var(--u)*6) calc(var(--u)*10) rgba(0,0,0,.25)); }
+  img.fit { display:block; width:100%; height:100%; object-fit:contain; }
+  #product { filter:drop-shadow(0 calc(var(--u)*24) calc(var(--u)*30) rgba(0,0,0,.28)); transform-style:preserve-3d; }
+  #shine { position:absolute; inset:0; -webkit-mask-size:contain; -webkit-mask-repeat:no-repeat; -webkit-mask-position:center;
+           background:linear-gradient(105deg, transparent 35%, rgba(255,255,255,.85) 50%, transparent 65%); background-size:300% 100%; mix-blend-mode:screen; }
+  #floor { border-radius:50%; background:radial-gradient(closest-side, rgba(0,0,0,.25), transparent); }
+  #chara { transform-origin:50% 100%; filter:drop-shadow(0 calc(var(--u)*14) calc(var(--u)*16) rgba(0,0,0,.25)); }
+  .big { font-family:var(--display); line-height:1.12; letter-spacing:.02em; text-shadow:0 calc(var(--u)*6) 0 rgba(0,0,0,.14); }
+  .hl { color:var(--accent); }
+  #bigtext { display:flex; flex-wrap:wrap; align-content:center; }
+  #bigtext span { display:inline-block; }
+  #bigtext .br { flex-basis:100%; height:0; }
+  #pname { font-family:var(--display); }
+  .badge { display:inline-block; padding:.28em .8em; margin:.25em; border-radius:999px; background:var(--light); color:var(--primary);
+           font-weight:900; box-shadow:0 calc(var(--u)*6) 0 color-mix(in srgb, var(--primary) 40%, transparent); }
+  #caption { display:flex; align-items:flex-start; gap:calc(var(--u)*18); }
+  #caption .tag { flex:none; padding:.15em .7em; border-radius:999px; background:var(--primary); color:#fff; font-weight:900; }
+  #caption .txt { font-weight:900; line-height:1.35; }
+  #caption.comic .txt { background:#fff; color:#2b1b20; padding:.35em .9em; border-radius:calc(var(--u)*22); border:calc(var(--u)*6) solid var(--primary); box-shadow:calc(var(--u)*8) calc(var(--u)*8) 0 var(--accent); }
+  #caption.soft .txt { background:rgba(255,255,255,.96); color:#3a2e2a; padding:.45em 1.1em; border-radius:calc(var(--u)*18); border-left:calc(var(--u)*10) solid var(--accent); font-weight:700; box-shadow:0 calc(var(--u)*10) calc(var(--u)*24) rgba(0,0,0,.12); }
+  #caption .hl { color:var(--primary); }
+  #band { left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center; background:var(--primary); color:#fff; font-family:var(--display); letter-spacing:.1em; }
+  .spark { position:absolute; width:calc(var(--u)*46); height:calc(var(--u)*46); background:var(--accent);
+           clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%); }
+  #flash { background:#fff; opacity:0; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="bg" class="layer"></div>
+  <div id="pattern" class="layer"></div>
+  <div id="photo"><img alt=""></div>
+  <div id="cover" class="abs"><img class="fit" alt=""></div>
+  <div id="floor" class="abs"></div>
+  <div id="product" class="abs"><img class="fit" alt=""><div id="shine"></div></div>
+  <div id="chara" class="abs"><img class="fit" alt=""></div>
+  <div id="sparks" class="layer"></div>
+  <div id="bigtext" class="abs big"></div>
+  <div id="pname" class="abs"></div>
+  <div id="badges" class="abs"></div>
+  <div id="price" class="abs big"></div>
+  <div id="caption" class="abs"><span class="tag"></span><span class="txt"></span></div>
+  <div id="band" class="abs"></div>
+  <div id="flash" class="layer"></div>
+</div>
+<script>
+// ------------------------------------------------------------ 共通
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, k) => a + (b - a) * k;
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const E = {
+  outExpo: k => (k === 1 ? 1 : 1 - Math.pow(2, -10 * k)),
+  inOut: k => (k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2),
+  outBack: k => 1 + 2.7 * Math.pow(k - 1, 3) + 1.7 * Math.pow(k - 1, 2),
+};
+const since = (t, arr) => { let last = -1e9; for (const x of arr || []) { if (x <= t) last = x; else break; } return t - last; };
+const pulse = (t, arr, d = .15) => Math.exp(-since(t, arr) / d);
+const mark = s => (s || "").replace(/\*([^*]+)\*/g, '<span class="hl">$1</span>');
+const $ = id => document.getElementById(id);
+
+const TL = window.TIMELINE || { size: [1920, 1080], fps: 30, seconds_per_beat: .47, kicks: [], snares: [], beats: [], narration: [], scenes: [], video_duration: 10, voice_env: [], data: {} };
+const D = TL.data || {}, C = D.character || { look: { palette: {} }, motion: {}, images: {} }, P = D.product || {};
+const M = Object.assign({ idle_bob: .6, talk_squash: .06, talk_tilt: 3, kick_hop: 10, entrance: "jump", sparkle: false }, C.motion);
+const [W, H] = TL.size, V = H > W, U = Math.min(W, H) / 1080, spb = TL.seconds_per_beat;
+const root = document.documentElement;
+root.style.setProperty("--u", `${U}px`);
+for (const [k, v] of Object.entries(C.look.palette || {})) root.style.setProperty(`--${k}`, v);
+if (C.look.display_font) root.style.setProperty("--display", C.look.display_font);
+document.body.style.width = `${W}px`; document.body.style.height = `${H}px`;
+$("pattern").className = `layer ${C.look.pattern || "stripes"}`;
+$("caption").className = `abs ${C.look.caption || "comic"}`;
+$("caption").querySelector(".tag").textContent = C.look.name_tag || C.name || "";
+$("band").textContent = D.tagline || "";
+
+const scenes = TL.scenes.length ? TL.scenes : [{ type: "hook", start: 0, end: 3, text: "*イチオシ*" }, { type: "product", start: 3, end: 6 }, { type: "closing", start: 6, end: TL.video_duration }];
+const sceneAt = t => scenes.find(s => t >= s.start && t < s.end) || scenes[scenes.length - 1];
+
+// 画像の読み込み（全部デコードしてから撮影開始）
+const loads = [];
+function setImg(el, src) { if (!src) return; const img = el.tagName === "IMG" ? el : el.querySelector("img"); img.src = src; loads.push(img.decode().catch(() => console.warn("image failed", src))); }
+setImg($("product"), P.image);
+setImg($("cover"), P.image);
+setImg($("chara"), C.images.main);
+if (P.image) $("shine").style.webkitMaskImage = `url(${P.image})`;
+const photoCache = {};
+for (const s of scenes) if (s.image && !photoCache[s.image]) { const im = new Image(); im.src = s.image; photoCache[s.image] = im; loads.push(im.decode().catch(() => {})); }
+for (const s of scenes) if (s.character_image) { const im = new Image(); im.src = s.character_image; loads.push(im.decode().catch(() => {})); }
+for (let i = 0; i < 6; i++) { const d = document.createElement("div"); d.className = "spark"; $("sparks").appendChild(d); }
+
+// ------------------------------------------------------------ レイアウト（x,y は中心、h は高さ。すべて画面比）
+const L = V ? {
+  hook:    { chara: [.5, .52, .56], text: [.5, .17, .9], prod: null },
+  product: { chara: [.8, .82, .26], prod: [.5, .42, .46], name: [.5, .7] },
+  point:   { chara: [.82, .84, .24], prod: [.3, .43, .38], text: [.5, .72, .9] },
+  photo:   { chara: null, text: [.5, .14, .9] },
+  closing: { chara: [.76, .37, .3], prod: [.3, .36, .4], name: [.5, .64], badges: [.5, .73], price: [.5, .8] },
+} : {
+  hook:    { chara: [.3, .54, .86], text: [.68, .45, .56], prod: null },
+  product: { chara: [.84, .66, .56], prod: [.46, .44, .66], name: [.46, .85] },
+  point:   { chara: [.88, .7, .5], prod: [.24, .5, .7], text: [.58, .44, .5] },
+  photo:   { chara: null, text: [.5, .16, .8] },
+  closing: { chara: [.84, .58, .72], prod: [.2, .5, .72], name: [.52, .36], badges: [.52, .54], price: [.52, .7] },
+};
+const lay = s => L[s.type] || L.point;
+
+function place(el, x, y, h, aspect, extra = "") {
+  const hh = h * H, ww = hh * aspect;
+  el.style.width = `${ww}px`; el.style.height = `${hh}px`;
+  el.style.left = `${x * W - ww / 2}px`; el.style.top = `${y * H - hh / 2}px`;
+  el.style.transform = extra;
+}
+const aspectOf = el => { const im = el.querySelector("img"); return im && im.naturalWidth ? im.naturalWidth / im.naturalHeight : .6; };
+
+// ------------------------------------------------------------ キャラの位置（シーンが変わると 0.35 秒で移動）
+function charaBox(t, si) {
+  const s = scenes[si], cur = lay(s).chara;
+  const prev = si > 0 ? lay(scenes[si - 1]).chara : null;
+  if (!cur) return null;
+  if (!prev) return cur;
+  const k = E.inOut(prog(t, s.start, s.start + .35));
+  return cur.map((v, i) => lerp(prev[i], v, k));
+}
+
+// ------------------------------------------------------------ メイン
+let lastBig = "", lastName = "", lastBadges = "", lastCharaSrc = "";
+async function seek(t) {
+  const si = scenes.indexOf(sceneAt(t)), s = scenes[si];
+  const ls = lay(s), local = t - s.start;
+  const kick = pulse(t, TL.kicks, .14), snare = pulse(t, TL.snares, .12);
+  const f = Math.round(t * TL.fps), env = (TL.voice_env || [])[f] || 0;
+  const narr = (TL.narration || []).find(n => t >= n.start - .05 && t <= n.end + .25);
+  const emo = narr ? (D.emotions || {})[narr.id] || "" : "";
+
+  // 背景：模様が拍で流れ、キックで少し明るく
+  $("pattern").style.backgroundPosition = `${(t / spb) * 30 * U}px ${(t / spb) * 12 * U}px`;
+  $("bg").style.filter = `brightness(${1 + kick * .08})`;
+  $("flash").style.opacity = Math.max(0, .5 - local * 3) * (si > 0 ? 1 : 0);  // シーン頭の軽いフラッシュ
+
+  // 写真シーン：ゆっくり寄る（Ken Burns）
+  const ph = $("photo");
+  if (s.type === "photo" && s.image) {
+    ph.style.opacity = E.outExpo(prog(local, 0, .3));
+    const img = ph.querySelector("img");
+    if (!img.src.endsWith(s.image)) img.src = s.image;
+    // object-fit:cover の切り取りを自前で計算（focus = 画像のどこを中心に見せるか 0〜1。縦型で主役を外さないため）
+    const nat = photoCache[s.image], iw = nat.naturalWidth || W, ih = nat.naturalHeight || H;
+    const fx = (s.focus || [.5, .5])[0], fy = (s.focus || [.5, .5])[1];
+    const z = lerp(1.04, 1.14, prog(t, s.start, s.end)) * (1 + kick * .01);
+    const sc0 = Math.max(W / iw, H / ih) * z, dw = iw * sc0, dh = ih * sc0;
+    const ox = clamp(W / 2 - fx * dw, W - dw, 0), oy = clamp(H / 2 - fy * dh, H - dh, 0);
+    img.style.objectFit = "fill"; img.style.transformOrigin = "0 0";
+    img.style.width = `${dw}px`; img.style.height = `${dh}px`;
+    img.style.transform = `translate(${ox}px, ${oy}px)`;
+    // 画像の中の商品を実物写真で上書き（生成画像のパッケージ文字は崩れるため）。cover は元画像に対する比率
+    const cv = $("cover");
+    if (s.cover) {
+      const c = s.cover;
+      // 元の箱より少し大きく覆う（縦横どちらも隠れるよう、幅からも高さを逆算して大きい方）
+      const asp = aspectOf(cv), hh = Math.max(c.h * dh, c.w * dw / asp) * (c.scale || 1.06);
+      place(cv, (ox + (c.x + c.w / 2) * dw) / W, (oy + (c.y + c.h / 2) * dh) / H, hh / H, asp, `rotate(${c.rot || 0}deg)`);
+      cv.style.opacity = 1;
+    } else cv.style.opacity = 0;
+  } else { ph.style.opacity = 0; $("cover").style.opacity = 0; }
+
+  // 商品：product は回転しながら登場、キックで少し弾む、スネアで光が走る
+  const pr = $("product"), pb = ls.prod;
+  if (pb && P.image) {
+    const k = E.outBack(prog(local, 0, spb * 1.2));
+    const spin = s.type === "product" ? (1 - E.outExpo(prog(local, 0, spb * 1.5))) * 540 : 0;
+    const bob = Math.sin(t / spb * Math.PI) * 6 * U;
+    place(pr, pb[0], pb[1], pb[2], aspectOf(pr),
+      `perspective(${1400 * U}px) translateY(${(1 - k) * 200 * U + bob}px) rotateY(${spin}deg) rotate(${s.type === "point" ? -4 : 0}deg) scale(${k * (1 + kick * .025)})`);
+    pr.style.opacity = prog(local, 0, .08);
+    $("shine").style.backgroundPosition = `${lerp(100, -100, clamp(since(t, TL.snares) / .45))}% 0`;
+    const fl = $("floor");
+    place(fl, pb[0], pb[1] + pb[2] * .5, pb[2] * .08, 5, `scale(${k})`);
+    fl.style.opacity = s.type === "photo" ? 0 : .8;
+  } else { pr.style.opacity = 0; $("floor").style.opacity = 0; }
+
+  // キャラクター：静止画を「弾み・息・しゃべりの伸び縮み・キックのホップ」で動かす
+  const ch = $("chara"), box = charaBox(t, si);
+  const src = s.character_image || C.images.main;
+  if (src !== lastCharaSrc) { ch.querySelector("img").src = src; lastCharaSrc = src; }
+  if (box) {
+    let enter = 1, enterY = 0, enterX = 0;
+    if (si === 0) {  // 最初の登場
+      enter = M.entrance === "jump" ? E.outBack(prog(t, 0, spb * 1.1)) : E.outExpo(prog(t, 0, spb * 1.4));
+      if (M.entrance === "jump") enterY = (1 - enter) * .5 * H; else enterX = (1 - enter) * .18 * W;
+    }
+    const idle = Math.sin(t / (spb * 2) * Math.PI * 2) * M.idle_bob * 8 * U;
+    const hop = -M.kick_hop * U * kick * (emo === "hype" || emo === "doya" ? 1.6 : 1);
+    const sq = env * M.talk_squash;
+    const tilt = Math.sin(t * 7.3) * M.talk_tilt * env + (emo === "doya" ? -4 : 0);
+    place(ch, box[0], box[1], box[2], aspectOf(ch),
+      `translate(${enterX}px, ${enterY + idle + hop}px) rotate(${tilt}deg) scale(${1 - sq * .5}, ${1 + sq})`);
+    ch.style.opacity = si === 0 ? prog(t, 0, .1) : 1;
+    // キラキラ（自慢・盛り上がりの行だけ）
+    const sp = M.sparkle && (emo === "doya" || emo === "hype" || emo === "shime");
+    [...$("sparks").children].forEach((d, i) => {
+      const a = i / 6 * Math.PI * 2 + t * .8, r = box[2] * H * (.42 + .06 * Math.sin(t * 3 + i));
+      d.style.left = `${box[0] * W + Math.cos(a) * r * .8}px`; d.style.top = `${(box[1] - box[2] * .2) * H + Math.sin(a) * r * .6}px`;
+      d.style.opacity = sp ? .9 * (0.5 + 0.5 * Math.sin(t * 6 + i * 2)) : 0;
+      d.style.transform = `scale(${.6 + kick * .8}) rotate(${t * 90}deg)`;
+    });
+  } else { ch.style.opacity = 0; [...$("sparks").children].forEach(d => d.style.opacity = 0); }
+
+  // 大見出し：hook は text、point は point、photo は text
+  const bt = $("bigtext"), tb = ls.text;
+  const bigSrc = s.type === "point" ? (s.point || "") : (s.text || "");
+  if (tb && bigSrc) {
+    const withSub = s.type === "point" && s.sub ? `${bigSrc}\n${s.sub}` : bigSrc;
+    if (withSub !== lastBig) {
+      lastBig = withSub;
+      const [main, sub] = withSub.split("\n");
+      const n = Math.max(...main.replace(/\*/g, "").split("/").map(x => [...x].length), 1);
+      const fs = Math.min((s.type === "point" ? 150 : 120) * U, tb[2] * W / n * .95);
+      bt.innerHTML = main.split("/").map(p => `<div style="font-size:${fs}px">${mark(p)}</div>`).join("") + (sub ? `<div style="font-size:${fs * .38}px;margin-top:.5em;font-family:'Noto Sans JP';font-weight:900">${mark(sub)}</div>` : "");
+    }
+    bt.style.left = `${(tb[0] - tb[2] / 2) * W}px`; bt.style.width = `${tb[2] * W}px`;
+    bt.style.top = `${tb[1] * H}px`; bt.style.textAlign = "center"; bt.style.justifyContent = "center";
+    // 写真の上では縁取りで読みやすく
+    bt.style.webkitTextStroke = s.type === "photo" ? `${12 * U}px var(--primary)` : "0";
+    bt.style.paintOrder = "stroke fill";
+    const k = E.outBack(prog(local, spb * .5, spb * 1.3));
+    bt.style.opacity = prog(local, spb * .5, spb * .6);
+    bt.style.transform = `translateY(-50%) scale(${k * (1 + kick * .03)}) rotate(${s.type === "point" ? -3 : 0}deg)`;
+  } else bt.style.opacity = 0;
+
+  // 商品名・規格
+  const pn = $("pname"), nb = ls.name;
+  if (nb) {
+    const html = `<div class="big" style="font-size:${(s.type === "closing" ? 120 : 84) * U}px">${mark(P.name || "")}</div><div style="font-size:${40 * U}px;font-weight:900;opacity:.9">${P.spec || ""}</div>`;
+    if (html !== lastName) { pn.innerHTML = html; lastName = html; }
+    pn.style.left = `${nb[0] * W}px`; pn.style.top = `${nb[1] * H}px`; pn.style.textAlign = "center";
+    const k = E.outExpo(prog(local, spb * .75, spb * 1.5));
+    pn.style.opacity = k; pn.style.transform = `translate(-50%, ${-50 + (1 - k) * 30}%)`;
+  } else pn.style.opacity = 0;
+
+  // 推しポイントのバッジ（closing）
+  const bd = $("badges"), bb = ls.badges;
+  if (bb && (P.points || []).length) {
+    const html = P.points.map(p => `<span class="badge" style="font-size:${34 * U}px">${p}</span>`).join("");
+    if (html !== lastBadges) { bd.innerHTML = html; lastBadges = html; }
+    bd.style.left = `${bb[0] * W}px`; bd.style.top = `${bb[1] * H}px`; bd.style.width = `${(V ? .9 : .5) * W}px`; bd.style.textAlign = "center";
+    [...bd.children].forEach((b, i) => { const k = E.outBack(prog(local, spb * (1.5 + i * .5), spb * (2 + i * .5))); b.style.transform = `scale(${k})`; });
+    bd.style.transform = "translate(-50%,-50%)"; bd.style.opacity = 1;
+  } else bd.style.opacity = 0;
+
+  // 価格（任意）
+  const pc = $("price"), pp = ls.price;
+  if (pp && P.price_text) {
+    pc.innerHTML = mark(P.price_text); pc.style.fontSize = `${110 * U}px`; pc.style.color = "var(--accent)";
+    pc.style.left = `${pp[0] * W}px`; pc.style.top = `${pp[1] * H}px`;
+    const k = E.outBack(prog(local, spb * 2.5, spb * 3.2));
+    pc.style.opacity = prog(local, spb * 2.5, spb * 2.6); pc.style.transform = `translate(-50%,-50%) scale(${k * (1 + kick * .05)})`;
+  } else pc.style.opacity = 0;
+
+  // タグライン帯（closing）
+  const band = $("band");
+  const bk = s.type === "closing" ? E.outExpo(prog(local, spb, spb * 1.6)) : 0;
+  band.style.height = `${110 * U}px`; band.style.fontSize = `${54 * U}px`;
+  band.style.transform = `translateY(${(1 - bk) * 110 * U}px)`;
+
+  // 字幕：名前タグ＋セリフを 1 文字ずつ（closing は帯と重ならないよう上へ）
+  const cap = $("caption"), txt = cap.querySelector(".txt");
+  if (narr) {
+    const all = narr.caption || narr.text, plain = all.replace(/\*/g, "");
+    const shown = Math.ceil([...plain].length * prog(t, narr.start, narr.start + (narr.end - narr.start) * .75));
+    let i = 0;
+    txt.innerHTML = mark(all).replace(/(<[^>]+>)|([^<])/g, (m, tag, c) => (tag ? tag : i++ < shown ? c : ""));
+    cap.style.fontSize = `${(V ? 46 : 44) * U}px`;
+    cap.style.left = `${(V ? .05 : .06) * W}px`; cap.style.maxWidth = `${(V ? .9 : .66) * W}px`;
+    cap.style.top = "auto"; cap.style.bottom = `${(s.type === "closing" ? 150 : 56) * U}px`;
+    cap.style.opacity = prog(t, narr.start - .05, narr.start + .05);
+  } else cap.style.opacity = 0;
+}
+window.seek = seek;
+
+const q = new URLSearchParams(location.search);
+Promise.all([document.fonts.ready, ...loads]).then(() => {
+  window.__ready = true;
+  if (q.has("play")) { const t0 = performance.now(); const loop = () => { seek((performance.now() - t0) / 1000 % TL.video_duration); requestAnimationFrame(loop); }; loop(); }
+  else seek(parseFloat(q.get("t") || "0"));
+});
+</script>
+</body>
+</html>

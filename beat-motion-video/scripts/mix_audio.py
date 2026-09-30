@@ -85,7 +85,7 @@ def main():
         env[e - lo:] = np.linspace(a.duck, 1, hi - e)
         duck_env[lo:hi] = np.minimum(duck_env[lo:hi], env)
         narration.append({"id": lid, "text": n["text"], "caption": n.get("caption", n["text"]),
-                          "tension": manifest[lid]["tension"],
+                          "tension": manifest[lid].get("tension", ""),
                           "start": round(t, 4), "end": round(t + len(v) / SR, 4)})
 
     mix = beat * duck_env + voice_track
@@ -102,9 +102,17 @@ def main():
     scenes = []
     for sc in plan.get("scenes", []):
         sc = dict(sc)
-        sc["start"] = bar_to_time(grid, sc.get("start_bar", 0))
-        sc["end"] = bar_to_time(grid, sc.get("end_bar", grid["bars"]))
+        if "start" not in sc:  # 秒で直接指定されていなければ小節から換算
+            sc["start"] = bar_to_time(grid, sc.get("start_bar", 0))
+            sc["end"] = bar_to_time(grid, sc.get("end_bar", grid["bars"]))
         scenes.append(sc)
+
+    # 声の大きさ（1 フレームごと 0〜1）。キャラの口パク代わりの弾みや、話している間だけ動く演出に使う
+    fps = plan.get("fps", 30)
+    hop = SR // fps
+    n_fr = len(voice_track) // hop
+    rms = np.sqrt(np.mean(voice_track[: n_fr * hop].reshape(n_fr, hop) ** 2, axis=1)) if n_fr else np.zeros(0)
+    voice_env = (rms / (np.percentile(rms[rms > 1e-4], 95) if np.any(rms > 1e-4) else 1)).clip(0, 1)
 
     timeline = dict(grid)
     timeline.update({
@@ -120,6 +128,8 @@ def main():
             or plan.get("scene3d", {}).get("material", {}).get("color")
             or plan.get("palette", {}).get("primary"),
         "title": plan.get("title", ""),
+        "voice_env": [round(float(x), 3) for x in voice_env],
+        "data": plan.get("data", {}),  # テンプレートに渡す任意データ（商品情報・キャラ設定など）
     })
     json.dump(timeline, open(os.path.join(a.out, "timeline.json"), "w"), ensure_ascii=False, indent=1)
     late = [n for n in narration if n["end"] > grid["duration"]]

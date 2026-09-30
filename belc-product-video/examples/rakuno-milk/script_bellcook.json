@@ -1,0 +1,57 @@
+{
+ "character": "bellcook",
+ "tagline": "くらしにベルク",
+ "product": {
+  "name": "酪農牛乳",
+  "spec": "1000ml",
+  "image": "product.png",
+  "points": [
+   "成分無調整",
+   "生乳100%使用"
+  ],
+  "price_text": ""
+ },
+ "lines": [
+  {
+   "id": "n01",
+   "text": "こんにちは、ベルクックです。",
+   "emotion": "odayaka",
+   "scene": "hook",
+   "scene_opts": {
+    "text": "今日の/*おすすめ*"
+   }
+  },
+  {
+   "id": "n02",
+   "text": "今日は*酪農牛乳*をご紹介します。",
+   "emotion": "ureshii",
+   "scene": "product"
+  },
+  {
+   "id": "n03",
+   "text": "成分無調整で、生乳100%使用です。",
+   "emotion": "kotsu",
+   "scene": "point",
+   "scene_opts": {
+    "point": "*成分無調整*",
+    "sub": "生乳100%使用"
+   },
+   "read": "成分無調整で、生乳ひゃくパーセント使用です。"
+  },
+  {
+   "id": "n04",
+   "text": "私は、朝のカフェオレに使います。",
+   "emotion": "teian",
+   "scene": "point",
+   "scene_opts": {
+    "point": "朝の/*カフェオレ*に"
+   }
+  },
+  {
+   "id": "n05",
+   "text": "お買い物のついでに、ぜひどうぞ。",
+   "emotion": "shime",
+   "scene": "closing"
+  }
+ ]
+}
