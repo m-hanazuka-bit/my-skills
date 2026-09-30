@@ -82,6 +82,9 @@ S=<skill>/scripts
 python3 $S/build_pop.py build work/layout.json --out work/out/<商品名>_<サイズ>
 node    $S/preview.mjs work/out/<商品名>_<サイズ>          # プレビュー.png とチェック結果
 ```
+Node・Playwright・フォント取得のどれかが使えない環境（claude.ai の実行環境など）では、`pip install playwright && python -m playwright install chromium` を試す。
+それでも無理ならプレビューは省略し、そのことを返信で伝える（SVG と jsx はプレビューなしでも作れる）。
+
 preview.mjs の報告を読む：
 - `長体 NN%` … 75% 未満なら文字サイズを下げるか改行する
 - `紙面外にはみ出し` / `端から5mm以内` … 位置を内側へ寄せる（300×864 などホルダーに差す物は特に）
