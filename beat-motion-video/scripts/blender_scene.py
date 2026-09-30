@@ -31,6 +31,8 @@ def args():
     ap.add_argument("--samples", type=int, default=32)
     ap.add_argument("--preview", action="store_true", help="解像度50%・6フレームおきで確認用")
     ap.add_argument("--percent", type=int, default=100, help="解像度の%%（下書きは 50）")
+    ap.add_argument("--from", dest="ffrom", type=int, help="この動画フレームから（部分的な再レンダリング用）")
+    ap.add_argument("--to", dest="fto", type=int, help="この動画フレームまで")
     ap.add_argument("--engine", choices=["eevee", "cycles"], default="eevee",
                     help="GPU/OpenGL の無いサーバーでは cycles（CPU）を使う")
     return ap.parse_args(argv)
@@ -180,7 +182,8 @@ def main():
     sc.render.resolution_x, sc.render.resolution_y = w, h
     sc.render.resolution_percentage = 50 if a.preview else a.percent
     sc.render.fps = fps
-    sc.frame_start, sc.frame_end = f0, f1
+    sc.frame_start = max(f0, a.ffrom) if a.ffrom is not None else f0
+    sc.frame_end = min(f1, a.fto) if a.fto is not None else f1
     sc.frame_step = 6 if a.preview else 1
     sc.render.film_transparent = cfg.get("transparent", True)
     sc.render.image_settings.file_format = "PNG"
@@ -264,7 +267,8 @@ def main():
     # 3D→2D：最後の2拍で主役に突っ込み画面を埋める
     if cam_cfg.get("handoff_out", True):
         place(F(t1 - 2 * spb), base_lens, base_dist * (0.75 if move == "push_in" else 1.0))
-        place(F(t1), base_lens * 0.8, base_dist * 0.18)
+        # 主役の外側で止める（中に入ると裏面が映って真っ黒になる）
+        place(F(t1), base_lens * 0.8, max(base_dist * 0.18, cfg.get("fit", 2.6) * 0.62))
 
     # オービット：ドロップ以降は回転速度を上げる
     spin_pre = math.radians(cam_cfg.get("deg_per_beat", 8))
@@ -331,7 +335,7 @@ def main():
     sc.render.filepath = os.path.join(os.path.abspath(a.out), "#####")
     if cfg.get("save_blend"):
         bpy.ops.wm.save_as_mainfile(filepath=os.path.join(os.path.abspath(a.out), "scene.blend"))
-    print(f"[beat-motion] render {eng} frames {f0}-{f1} -> {a.out}")
+    print(f"[beat-motion] render {eng} frames {sc.frame_start}-{sc.frame_end} -> {a.out}")
     bpy.ops.render.render(animation=True)
 
 

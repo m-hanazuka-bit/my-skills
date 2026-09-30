@@ -107,6 +107,7 @@ const $ = id => document.getElementById(id);
 for (const [k, v] of Object.entries(TL.palette || {})) document.documentElement.style.setProperty(`--${k}`, v);
 if (ST.display_font) document.documentElement.style.setProperty("--display", ST.display_font);
 $("caption").className = `layer ${ST.caption || "pill"}`;
+if (TL.handoff_color) $("shape").style.background = TL.handoff_color;
 
 // ------------------------------------------------------------------ シーン
 const scenes = (TL.scenes || []).length ? TL.scenes : [
@@ -255,7 +256,9 @@ async function seek(t) {
   // シーン切り替えのワイプ（小節頭の半拍前から）
   let wipe = 0;
   for (const x of scenes) {
-    if (x === scenes[0] || x.type === "3d" || (x.transition || "wipe") === "cut") continue;
+    const prev = scenes[scenes.indexOf(x) - 1];
+    // 3D の直後は受け渡しの丸がつなぎを担うのでワイプしない
+    if (!prev || x.type === "3d" || prev.type === "3d" || (x.transition || "wipe") === "cut") continue;
     const a = prog(t, x.start - spb / 2, x.start), b = prog(t, x.start, x.start + spb / 2);
     if (a > 0 && b < 1) wipe = a < 1 ? E.inExpo(a) : 1 - E.outExpo(b);
   }

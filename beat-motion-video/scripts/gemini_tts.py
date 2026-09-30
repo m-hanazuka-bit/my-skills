@@ -21,8 +21,8 @@ import urllib.error
 import urllib.request
 import wave
 
-# Gemini 3.x の TTS モデルが使えるならそれを --model / GEMINI_TTS_MODEL で指定する
-DEFAULT_MODEL = os.environ.get("GEMINI_TTS_MODEL", "gemini-2.5-flash-preview-tts")
+# 既定は Gemini 3.8 Flash TTS。変えるときは --model か環境変数 GEMINI_TTS_MODEL
+DEFAULT_MODEL = os.environ.get("GEMINI_TTS_MODEL", "gemini-3.8-flash-tts")
 API = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 
 # 声のテンション設計。Gemini TTS は自然文の演技指示で声色が変わる。

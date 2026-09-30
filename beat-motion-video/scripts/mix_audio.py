@@ -115,6 +115,10 @@ def main():
         "scenes": scenes,
         "palette": plan.get("palette", {}),
         "look": plan.get("look", {}),
+        # 2D⇄3D の受け渡しに使う色 = 3D の主役の色（画面が主役で埋まった瞬間と同じ色で 2D に渡す）
+        "handoff_color": plan.get("look", {}).get("handoff_color")
+            or plan.get("scene3d", {}).get("material", {}).get("color")
+            or plan.get("palette", {}).get("primary"),
         "title": plan.get("title", ""),
     })
     json.dump(timeline, open(os.path.join(a.out, "timeline.json"), "w"), ensure_ascii=False, indent=1)

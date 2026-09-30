@@ -53,7 +53,7 @@ Gemini TTS は「どう読むか」を自然文で指示できる。1 行ずつ�
 
 ### モデルとキー
 - キーは環境変数 `GEMINI_API_KEY`、またはスキル直下の `.env`（`.env.example` をコピー）。**キーを storyboard や SKILL.md に書かない**
-- モデルは `--model` か環境変数 `GEMINI_TTS_MODEL`。新しい Flash TTS が出ていればそれを使う（既定は `gemini-2.5-flash-preview-tts`）
+- モデルは `--model` か環境変数 `GEMINI_TTS_MODEL`。既定は `gemini-3.8-flash-tts`
 - 出力は 24kHz モノラル。ミックス時に 48kHz へ変換、声の間はビートを自動で 45% に下げる（`--duck`）
 
 ### ミックスの調整（mix_audio.py）
