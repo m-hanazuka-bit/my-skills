@@ -1,0 +1,296 @@
+<!doctype html>
+<!--
+  2D モーショングラフィックのテンプレート（部品集つき）。
+  ルール：アニメーションは必ず seek(t) の中で「時刻 t から状態を計算」する（CSS アニメ/requestAnimationFrame 禁止）。
+  そうすれば render_frames.mjs が 1 フレームずつ正確に撮れて、ビートとズレない。
+
+  注入される値（render_frames.mjs が addInitScript で入れる）:
+    window.TIMELINE : mix_audio.py の timeline.json（beats, kicks, snares, impacts, sections, narration, scenes, palette, look）
+    window.FRAMES3D : { dir: "3d", start: 144, end: 359 }  Blender の透過 PNG 連番（無ければ null）
+  ブラウザで直接開いたときは ?t=3.2 でその時刻を表示、?play で簡易再生（確認用）。
+
+  scenes[] で使えるキー（storyboard.json に書く）:
+    type      "title" | "tagline" | "3d" | "pattern" | "outro"
+    text      大見出し。*ラクに* のように * で囲むとアクセント色で強調。\n で改行
+    sub       小見出し / vertical: true で縦書き / serif: true で明朝
+    label     章ラベル（例 "01 PADDLE"）左下に出る
+    echo      true で残像（エコー）タイポ
+    sticker   { "text": "キッチン", "x": 0.3, "y": 0.45, "rot": -8 }  拍で貼られる斜めラベル
+    onomatopoeia  { "text": "ポコッ", "x": 0.72, "y": 0.35 }  スネアで弾む擬音
+    transition "wipe"(既定) | "cut"
+-->
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link href="fonts/fonts.css" rel="stylesheet"><!-- fetch_fonts.py で保存したローカルフォント（無ければ下の Google Fonts） -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Noto+Sans+JP:wght@400;700;900&family=Noto+Serif+JP:wght@500;900&family=JetBrains+Mono:wght@500&display=block" rel="stylesheet">
+<style>
+  :root { --bg:#0b0f1a; --primary:#3aa0ff; --accent:#d7ff3a; --text:#ffffff; --display:"Dela Gothic One", "Noto Sans JP", sans-serif; --title-size:180px; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:1920px; height:1080px; overflow:hidden; background:var(--bg); }
+  #stage { position:absolute; inset:0; overflow:hidden; font-family:"Noto Sans JP", sans-serif; color:var(--text); }
+  .layer { position:absolute; inset:0; }
+  #bg { background:radial-gradient(circle at 50% 55%, color-mix(in srgb, var(--primary) 35%, var(--bg)) 0%, var(--bg) 70%); }
+  #stripes { opacity:.18; background:repeating-linear-gradient(115deg, transparent 0 60px, var(--accent) 60px 62px); }
+  #pattern { display:none; background:var(--accent); overflow:hidden; }
+  #pattern .dot { position:absolute; border-radius:50%; background:var(--primary); box-shadow:inset 18px 18px 0 rgba(0,0,0,.18); }
+  #pattern .row { position:absolute; left:0; white-space:nowrap; font-family:var(--display); font-size:150px; color:transparent; -webkit-text-stroke:3px color-mix(in srgb, var(--primary) 30%, transparent); }
+  #shape { left:50%; top:50%; width:0; height:0; border-radius:50%; background:var(--primary); transform:translate(-50%,-50%); }
+  #img3d { width:100%; height:100%; object-fit:cover; display:none; }
+  #title { display:flex; flex-wrap:wrap; align-content:center; align-items:center; justify-content:center; font-family:var(--display); font-weight:900; font-size:var(--title-size); padding:0 120px; }
+  #title span { display:inline-block; line-height:1.1; will-change:transform, opacity; }
+  #title span.hl { color:var(--accent); }
+  #title span.br { flex-basis:100%; height:0; }
+  #title.vertical { flex-direction:column; flex-wrap:nowrap; gap:.02em; }
+  #title.serif { font-family:"Noto Serif JP", serif; font-weight:900; }
+  #sub { top:auto; bottom:210px; text-align:center; font-size:44px; font-weight:700; letter-spacing:.2em; }
+  #sub.vertical { display:flex; flex-direction:column; align-items:center; gap:.25em; inset:auto; left:calc(50% + var(--title-size) * .75); top:50%; transform:translateY(-50%); letter-spacing:0; line-height:1; }
+  #sticker { inset:auto; padding:.15em .6em; background:var(--accent); color:var(--bg); font-family:var(--display); font-size:64px; border-radius:10px; box-shadow:6px 6px 0 rgba(0,0,0,.35); opacity:0; }
+  #ono { inset:auto; font-family:var(--display); font-size:170px; color:var(--accent); -webkit-text-stroke:4px var(--bg); paint-order:stroke; opacity:0; }
+  #label { inset:auto; left:80px; bottom:150px; font-family:"JetBrains Mono", monospace; font-size:34px; font-weight:500; letter-spacing:.12em; color:var(--accent); }
+  #caption { inset:auto; left:50%; bottom:64px; transform:translateX(-50%); max-width:1500px; font-size:44px; font-weight:900; white-space:nowrap; }
+  #caption.pill { padding:.35em 1.1em; border-radius:999px; background:color-mix(in srgb, var(--bg) 88%, transparent); }
+  #caption.plain { text-shadow:0 2px 12px rgba(0,0,0,.6); }
+  #caption .hl { color:var(--accent); }
+  #hud { pointer-events:none; font-family:"JetBrains Mono", monospace; font-size:20px; letter-spacing:.14em; color:color-mix(in srgb, var(--text) 70%, transparent); }
+  #hud .tl { position:absolute; left:48px; top:36px; line-height:1.6; }
+  #hud .tr { position:absolute; right:48px; top:36px; text-align:right; line-height:1.6; }
+  #hud .dots span { display:inline-block; width:10px; height:10px; margin-left:8px; border-radius:50%; border:2px solid currentColor; }
+  #hud .dots span.on { background:currentColor; }
+  #wipe { background:var(--accent); clip-path:circle(0% at 50% 50%); }
+  #flash { background:#fff; mix-blend-mode:overlay; opacity:0; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="bg" class="layer"></div>
+  <div id="stripes" class="layer"></div>
+  <div id="pattern" class="layer"></div>
+  <div id="shape" class="layer"></div>
+  <img id="img3d" class="layer" alt="">
+  <div id="title" class="layer"></div>
+  <div id="sub" class="layer"></div>
+  <div id="sticker" class="layer"></div>
+  <div id="ono" class="layer"></div>
+  <div id="label" class="layer"></div>
+  <div id="caption" class="layer"></div>
+  <div id="hud" class="layer"><div class="tl"></div><div class="tr"></div></div>
+  <div id="wipe" class="layer"></div>
+  <div id="flash" class="layer"></div>
+</div>
+<script>
+// ------------------------------------------------------------------ ユーティリティ
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, k) => a + (b - a) * k;
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const E = {
+  outExpo: k => (k === 1 ? 1 : 1 - Math.pow(2, -10 * k)),
+  inExpo: k => (k === 0 ? 0 : Math.pow(2, 10 * k - 10)),
+  outBack: k => 1 + 2.7 * Math.pow(k - 1, 3) + 1.7 * Math.pow(k - 1, 2),
+  inOutCubic: k => (k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2),
+};
+// 直前のイベントからの経過秒（ビート反応の基本形）
+const since = (t, arr) => { let last = -1e9; for (const x of arr || []) { if (x <= t) last = x; else break; } return t - last; };
+const pulse = (t, arr, decay = 0.18) => Math.exp(-since(t, arr) / decay);
+// *強調* 記法 → [{c, hl}] / "\n" は改行
+const parseMarked = text => { const out = []; let hl = false; for (const c of text) { if (c === "*") { hl = !hl; continue; } out.push({ c, hl }); } return out; };
+const markHTML = text => text.replace(/\*([^*]+)\*/g, '<span class="hl">$1</span>');
+
+const TL = window.TIMELINE || { bpm: 120, seconds_per_beat: .5, beats: [], kicks: [], snares: [], impacts: [], sections: [], narration: [], scenes: [], palette: {}, fps: 30, video_duration: 15 };
+const F3D = window.FRAMES3D || null;
+const ST = TL.look || {};                // storyboard.json の "look"（hud_label, caption, display_font など）
+const spb = TL.seconds_per_beat;
+const bar = n => n * 4 * spb;
+const $ = id => document.getElementById(id);
+
+for (const [k, v] of Object.entries(TL.palette || {})) document.documentElement.style.setProperty(`--${k}`, v);
+if (ST.display_font) document.documentElement.style.setProperty("--display", ST.display_font);
+$("caption").className = `layer ${ST.caption || "pill"}`;
+
+// ------------------------------------------------------------------ シーン
+const scenes = (TL.scenes || []).length ? TL.scenes : [
+  { id: "s1", type: "title", text: "*TITLE*", sub: "subtitle", start: 0, end: bar(2) },
+  { id: "s2", type: "3d", start: bar(2), end: bar(6) },
+  { id: "s3", type: "tagline", text: "TAGLINE", start: bar(6), end: TL.video_duration },
+];
+const sceneAt = t => scenes.find(s => t >= s.start && t < s.end) || scenes[scenes.length - 1];
+
+// pattern シーン用：ボールの穴のような円＋流れる英字（3D の主役の質感を 2D 柄にして受け渡す）
+(function buildPattern() {
+  const p = $("pattern");
+  const word = (ST.pattern_word || TL.title || "PATTERN").toUpperCase();
+  for (let r = 0; r < 5; r++) {
+    const row = document.createElement("div");
+    row.className = "row"; row.style.top = `${r * 220 - 20}px`;
+    row.textContent = `${word} · `.repeat(8);
+    p.appendChild(row);
+  }
+  const rnd = (i => () => (i = (i * 16807) % 2147483647) / 2147483647)(7);
+  for (let i = 0; i < 11; i++) {
+    const d = document.createElement("div");
+    const size = 140 + rnd() * 240;
+    d.className = "dot"; d.dataset.size = size;
+    d.style.left = `${rnd() * 1920 - size / 2}px`; d.style.top = `${rnd() * 1080 - size / 2}px`;
+    p.appendChild(d);
+  }
+})();
+
+function setTitle(s) {
+  const el = $("title"), text = s.text || "";
+  const key = text + "|" + !!s.vertical + "|" + !!s.serif;
+  if (el.dataset.key === key) return;
+  el.dataset.key = key;
+  el.classList.toggle("vertical", !!s.vertical);
+  el.classList.toggle("serif", !!s.serif);
+  $("sub").classList.toggle("vertical", !!s.vertical);
+  const chars = parseMarked(text);
+  // 最長行の文字数で画面に収まるサイズへ（縦書きは高さ、横書きは幅で決める）
+  const longest = Math.max(1, ...text.replace(/\*/g, "").split("\n").map(l => [...l].length));
+  const size = Math.min(ST.title_max || 190, (s.vertical ? 860 : 1640) / longest);
+  document.documentElement.style.setProperty("--title-size", `${size}px`);
+  el.innerHTML = chars.map(({ c, hl }) => (c === "\n" ? '<span class="br"></span>' : `<span class="${hl ? "hl" : ""}">${c === " " ? "&nbsp;" : c}</span>`)).join("");
+}
+
+// 文字を 8 分音符ごとに 1 文字ずつ拍に乗せて出す。echo なら残像を重ねる
+function kinetic(t, s) {
+  const spans = [...$("title").children].filter(x => !x.classList.contains("br"));
+  const step = Math.min(spb / 2, Math.max(0.03, (s.end - s.start - spb * 1.5) / Math.max(1, spans.length)));
+  const kick = pulse(t, TL.kicks, .12);
+  spans.forEach((sp, i) => {
+    const k = E.outBack(prog(t, s.start + i * step, s.start + i * step + step * 1.2));
+    const out = E.inExpo(prog(t, s.end - spb / 2, s.end));
+    sp.style.opacity = k * (1 - out);
+    sp.style.transform = `translateY(${(1 - k) * 80 - out * 60}px) scale(${lerp(1.6, 1, k) * (sp.classList.contains("hl") ? 1 + kick * .08 : 1)})`;
+    sp.style.filter = `blur(${(1 - k) * 12 + out * 16}px)`;
+    if (s.echo) {
+      // 下方向に 6 枚の残像。出現直後に広がり、拍でまた少し開く
+      const spread = (1 - k) * 22 + kick * 10 + 4;
+      sp.style.textShadow = Array.from({ length: 6 }, (_, j) => `0 ${(j + 1) * spread}px 0 color-mix(in srgb, var(--text) ${60 - j * 10}%, transparent)`).join(",");
+    } else sp.style.textShadow = "none";
+  });
+}
+
+function popAt(el, t, at, cfg, base) {
+  if (!cfg) { el.style.opacity = 0; return; }
+  const k = E.outBack(prog(t, at, at + spb / 2));
+  el.textContent = cfg.text;
+  el.style.left = `${(cfg.x ?? .5) * 1920}px`; el.style.top = `${(cfg.y ?? .5) * 1080}px`;
+  el.style.opacity = prog(t, at, at + .05);
+  el.style.transform = `translate(-50%,-50%) rotate(${cfg.rot ?? base}deg) scale(${k * (1 + pulse(t, TL.snares, .1) * .12)})`;
+}
+
+// ------------------------------------------------------------------ 3D レイヤ
+let lastSrc = "";
+function set3D(t) {
+  const img = $("img3d");
+  if (!F3D) { img.style.display = "none"; return Promise.resolve(); }
+  const f = Math.round(t * TL.fps);
+  if (f < F3D.start || f > F3D.end) { img.style.display = "none"; return Promise.resolve(); }
+  img.style.display = "block";
+  const src = `${F3D.dir}/${String(f).padStart(5, "0")}.png`;
+  if (src === lastSrc) return Promise.resolve();
+  lastSrc = src;
+  img.src = src;
+  return img.decode().catch(() => {});
+}
+
+// ------------------------------------------------------------------ メイン：時刻 t の画を作る
+async function seek(t) {
+  const s = sceneAt(t), si = scenes.indexOf(s);
+  const kick = pulse(t, TL.kicks, .15);
+  const imp = pulse(t, TL.impacts, .35);
+
+  // 背景：キックで明るさ、ストライプはテンポで流れる
+  $("bg").style.filter = `brightness(${1 + kick * .25 + imp * .6})`;
+  $("stripes").style.backgroundPosition = `${(t / spb) * 40}px 0`;
+  $("flash").style.opacity = imp * .8 + kick * .06;
+
+  // pattern シーン：円がキックで膨らみ、英字の行が交互に流れる
+  const pat = $("pattern");
+  pat.style.display = s.type === "pattern" ? "block" : "none";
+  if (s.type === "pattern") {
+    const k = E.outExpo(prog(t, s.start, s.start + spb));
+    pat.querySelectorAll(".dot").forEach((d, i) => {
+      const sz = d.dataset.size * k * (1 + kick * .12 * ((i % 3) + 1) / 2);
+      d.style.width = d.style.height = `${sz}px`;
+      d.style.marginLeft = d.style.marginTop = `${(d.dataset.size - sz) / 2}px`;
+    });
+    pat.querySelectorAll(".row").forEach((r, i) => { r.style.transform = `translateX(${(i % 2 ? -1 : 1) * (t - s.start) * 160 - 400}px)`; });
+  }
+
+  // 2D の丸 ⇄ 3D の主役 をつなぐ形。3D の直前 1 拍で丸が中央に集まり開始フレームに重なる。
+  // 3D 末尾はカメラが主役に突っ込む → 丸が画面を覆って次の 2D へ
+  const s3 = scenes.find(x => x.type === "3d");
+  let shapeSize = 0;
+  if (s3 && ST.shape_handoff !== false) {
+    const inK = E.outExpo(prog(t, s3.start - spb, s3.start));
+    const hold = t >= s3.start && t < s3.start + spb / 2;
+    const outK = E.inExpo(prog(t, s3.end - spb / 2, s3.end));
+    const fade = 1 - prog(t, s3.end + spb, s3.end + spb * 2);  // 次のシーンで 2 拍かけて丸を消す
+    shapeSize = t < s3.start ? inK * 420 : hold ? 420 * (1 - prog(t, s3.start, s3.start + spb / 2)) : outK * 2400 * fade;
+  }
+  $("shape").style.width = $("shape").style.height = `${shapeSize}px`;
+
+  // テキスト系
+  const title = $("title"), sub = $("sub");
+  if (s.text) {
+    setTitle(s);
+    title.style.display = "flex";
+    kinetic(t, s);
+    if (sub.dataset.text !== (s.sub || "")) {
+      sub.dataset.text = s.sub || "";
+      sub.innerHTML = s.vertical ? [...sub.dataset.text].map(c => `<span>${c}</span>`).join("") : markHTML(sub.dataset.text);
+    }
+    sub.style.opacity = E.outExpo(prog(t, s.start + spb * 2, s.start + spb * 3)) * (1 - prog(t, s.end - spb / 2, s.end));
+  } else {
+    title.style.display = "none";
+    sub.style.opacity = 0;
+  }
+  popAt($("sticker"), t, s.start + spb * 2, s.sticker, -8);
+  popAt($("ono"), t, s.start + spb, s.onomatopoeia, -6);
+  $("label").textContent = s.label || "";
+  $("label").style.opacity = s.label ? E.outExpo(prog(t, s.start, s.start + spb / 2)) : 0;
+
+  // シーン切り替えのワイプ（小節頭の半拍前から）
+  let wipe = 0;
+  for (const x of scenes) {
+    if (x === scenes[0] || x.type === "3d" || (x.transition || "wipe") === "cut") continue;
+    const a = prog(t, x.start - spb / 2, x.start), b = prog(t, x.start, x.start + spb / 2);
+    if (a > 0 && b < 1) wipe = a < 1 ? E.inExpo(a) : 1 - E.outExpo(b);
+  }
+  $("wipe").style.clipPath = `circle(${wipe * 120}% at 50% 50%)`;
+
+  // 字幕（ナレーションに同期、1 文字ずつ出る）
+  const cap = $("caption");
+  const n = (TL.narration || []).find(x => t >= x.start && t <= x.end + .2);
+  if (n && ST.caption !== "none") {
+    const plain = n.text.replace(/\*/g, "");
+    const shown = Math.ceil([...plain].length * prog(t, n.start, n.start + (n.end - n.start) * .7));
+    cap.innerHTML = markHTML(n.caption || n.text).replace(/(<[^>]+>)|([^<])/g, (() => { let i = 0; return (m, tag, ch) => (tag ? tag : i++ < shown ? ch : ""); })());
+    cap.style.opacity = 1;
+  } else cap.style.opacity = 0;
+
+  // HUD：左上に作品名とシーン番号、右上に BPM とシーンのドット
+  if (ST.hud !== false) {
+    $("hud").querySelector(".tl").innerHTML = `${(ST.hud_label || TL.title || "").toUpperCase()}<br>${String(si + 1).padStart(2, "0")} / ${(s.hud || s.label || s.type || "").toUpperCase()}`;
+    $("hud").querySelector(".tr").innerHTML = `<span class="dots">${scenes.map((_, i) => `<span class="${i === si ? "on" : ""}"></span>`).join("")}</span><br>${Math.round(TL.bpm)} BPM`;
+  }
+
+  await set3D(t);
+}
+window.seek = seek;
+
+// ------------------------------------------------------------------ ブラウザ確認用
+const q = new URLSearchParams(location.search);
+document.fonts.ready.then(() => {
+  window.__ready = true;
+  if (q.has("play")) {
+    const t0 = performance.now();
+    const loop = () => { const t = (performance.now() - t0) / 1000 % TL.video_duration; seek(t); requestAnimationFrame(loop); };
+    loop();
+  } else seek(parseFloat(q.get("t") || "0"));
+});
+</script>
+</body>
+</html>

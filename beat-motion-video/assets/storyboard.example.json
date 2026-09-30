@@ -1,0 +1,36 @@
+{
+  "title": "一芯二葉 — 手摘みの新茶",
+  "duration": 15,
+  "fps": 30,
+  "size": [1920, 1080],
+  "beat": { "style": "cinematic", "bpm": 100 },
+  "voice": { "name": "Kore" },
+  "palette": {
+    "bg": "#050806",
+    "primary": "#3f7d2c",
+    "accent": "#c9f27a",
+    "light": "#fff6e0",
+    "text": "#f4f1e8"
+  },
+  "scenes": [
+    { "id": "s1", "type": "title", "text": "一芯二葉", "sub": "手摘み", "vertical": true, "serif": true, "start_bar": 0, "end_bar": 2 },
+    { "id": "s2", "type": "3d", "start_bar": 2, "end_bar": 5 },
+    { "id": "s3", "type": "tagline", "text": "朝摘みの、ひとしずく。", "serif": true, "start_bar": 5, "end_bar": 6 }
+  ],
+  "narration": [
+    { "id": "n01", "text": "一芯二葉。", "tension": "whisper", "at_bar": 0.5 },
+    { "id": "n02", "text": "夜明け前、ひとつひとつ手で摘む。", "tension": "narrator", "at_bar": 2 },
+    { "id": "n03", "text": "新茶、はじまりました。", "tension": "tagline", "at_bar": 5 }
+  ],
+  "scene3d": {
+    "start_bar": 2,
+    "end_bar": 5,
+    "subject": { "type": "custom", "script": "tea_leaf.py" },
+    "material": { "color": "#3f7d2c", "roughness": 0.35, "emission": "#c9f27a" },
+    "camera": { "move": "orbit", "lens": 60, "distance": 6, "deg_per_beat": 6, "drop_speedup": 3 },
+    "punch": 0.06,
+    "glow": 0.4,
+    "snare_turn": 15,
+    "transparent": true
+  }
+}

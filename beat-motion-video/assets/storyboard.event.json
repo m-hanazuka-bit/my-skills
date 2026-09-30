@@ -1,0 +1,48 @@
+{
+  "title": "Pickleball Event",
+  "duration": 22,
+  "fps": 30,
+  "size": [1920, 1080],
+  "beat": { "style": "future", "bpm": 132 },
+  "voice": { "name": "Puck" },
+  "palette": {
+    "bg": "#0d2a8a",
+    "primary": "#1f5fe0",
+    "accent": "#d7ff3a",
+    "light": "#ffffff",
+    "text": "#ffffff"
+  },
+  "look": {
+    "style_id": "sport-pop",
+    "hud_label": "PICKLEBALL EVENT",
+    "caption": "pill",
+    "pattern_word": "PICKLEBALL",
+    "title_max": 200
+  },
+  "scenes": [
+    { "id": "s1", "type": "title", "text": "*ピックルボール*\n知ってる？", "label": "00 INTRO", "start_bar": 0, "end_bar": 2 },
+    { "id": "s2", "type": "3d", "label": "01 PADDLE", "hud": "PADDLE", "start_bar": 2, "end_bar": 4 },
+    { "id": "s3", "type": "title", "text": "打つと、", "echo": true, "onomatopoeia": { "text": "ポコッ", "x": 0.7, "y": 0.4 }, "sub": "乾いた音。", "hud": "SOUND", "start_bar": 4, "end_bar": 6 },
+    { "id": "s4", "type": "pattern", "hud": "BALL", "start_bar": 6, "end_bar": 8 },
+    { "id": "s5", "type": "title", "text": "イベント\n*やります。*", "sticker": { "text": "初心者歓迎", "x": 0.74, "y": 0.28, "rot": -8 }, "start_bar": 8, "end_bar": 11 },
+    { "id": "s6", "type": "outro", "text": "PICKLEBALL *EVENT*", "sub": "まずは一球から、どうですか。", "transition": "cut", "start_bar": 11, "end_bar": 12 }
+  ],
+  "narration": [
+    { "id": "n01", "text": "*ピックルボール*、知ってますか？", "tension": "bright", "at_bar": 0.25 },
+    { "id": "n02", "text": "軽いパドルと、穴のあいたボールで*打ち合う*スポーツです。", "tension": "narrator", "at_bar": 2 },
+    { "id": "n03", "text": "打つと、ポコッ。乾いた音。", "tension": "build", "at_bar": 4.25 },
+    { "id": "n04", "text": "そのピックルボールの、", "tension": "build", "at_bar": 6.5 },
+    { "id": "n05", "text": "イベント、*やります！*", "tension": "hype", "at_bar": 8 },
+    { "id": "n06", "text": "まずは一球から、どうですか。", "tension": "tagline", "at_bar": 11 }
+  ],
+  "scene3d": {
+    "start_bar": 2,
+    "end_bar": 4,
+    "subject": { "type": "primitive", "primitive": "sphere" },
+    "material": { "color": "#d7ff3a", "roughness": 0.45, "emission": "#ffffff" },
+    "camera": { "move": "orbit", "lens": 50, "distance": 7, "deg_per_beat": 10, "drop_speedup": 2 },
+    "punch": 0.08,
+    "glow": 0.6,
+    "transparent": true
+  }
+}
