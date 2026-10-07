@@ -19,3 +19,19 @@ python $S/match_ref.py --profile cm-narration-match/examples/juumangoku/profile.
 | `tts_Algenib_3_cm.wav` | 7.4 秒 | 十万石の採用版に一番近いざらつき（おすすめ） |
 | `tts_Algenib_cm.wav` | 8.8 秒 | 声が澄んでいて、ゆったりめ |
 | `tts_Algenib_2_cm.wav` | 7.9 秒 | 声が澄んでいる |
+
+## 1 本にまとめた版
+`shimizu_cm_full.wav`（と `.mp3`、約 18 秒）：尺八 →「風が語りかけます。」→ 鳥のさえずり → 清水ナレーション
+
+| 時刻 | 内容 | 素材 |
+|---|---|---|
+| 0.0 秒〜 | 尺八 | `audio/juumangoku/shakuhachi.wav` |
+| 3.6 秒〜 | 風が語りかけます。 | `audio/juumangoku/narration_Algenib_cm.wav` の 0.54〜2.84 秒 |
+| 6.6 秒〜 | 鳥のさえずり | `audio/juumangoku/birds.wav` |
+| 10.1 秒〜 | 清水です。うまい、うますぎる。きよいみずとかいて、しみず。 | `tts_Algenib_3_cm.wav` |
+
+```bash
+python3 audio/shimizu/build_cm.py                                         # 作り直す
+python3 audio/shimizu/build_cm.py --shimizu audio/shimizu/tts_Algenib_cm.wav  # 清水を別テイクにする
+```
+時刻と音量は `build_cm.py` の `parts` と音量の行で変えられる。
