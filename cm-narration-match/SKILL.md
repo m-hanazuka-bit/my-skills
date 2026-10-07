@@ -71,6 +71,19 @@ python $S/voice_report.py --profile work/profile.json work/matched/*.wav --markd
 - 比較表で「高さ」「音色差」「間のずれ」が元CMに近いか確かめる。数値上近いものを 1〜2 本推し、全部の候補を送って**聴いて選んでもらう**
 - 比較表の項目の意味は `voice_report.py` の冒頭に書いてある。ユーザーには専門用語を言い換えて伝える（HNR→声の澄み具合、スペクトル重心→音の明るさ）
 
+### 参考CMの「音」で別の台本を読ませるとき
+「十万石みたいな感じで、こういう台本を読んで」のように、似せたいCMはあるが台本が違う依頼では、元CMの句の時刻は使えない。
+声・高さ・音色だけ元CMの `profile.json` から借り、間は台本の句読点で決める。
+```bash
+python $S/match_ref.py --profile <似せたいCMの>/profile.json work/tts/*.wav \
+    --script work/script.txt --gaps "、=0.5,。=1.0" --out-dir work/matched
+python $S/voice_report.py --profile <似せたいCMの>/profile.json work/matched/*.wav --no-timing
+```
+- 間の長さは似せたいCMの測定値から決めるとよい（十万石は「、」約 0.4 秒、「。」約 1.0〜1.25 秒）。ユーザーが「もっと間を」と言えば数値を上げる
+- TTS が句読点で区切らずに続けて読んだ所には間を入れられない（対応表に ※ が出る）。その場合はテイクを作り直す
+- 人名や地名は TTS が読み違えやすい（清水→きよみず／せいすい）。台本はかなで書いて TTS に渡す
+- 例：`audio/shimizu/`（「しみずです。うまい、うますぎる。きよいみずとかいて、しみず。」を十万石の声と音で）
+
 ## 6. 聴いてもらって詰める
 ユーザーの言葉と、動かすつまみの対応：
 

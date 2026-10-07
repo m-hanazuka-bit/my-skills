@@ -30,13 +30,14 @@ def main():
     ap.add_argument("files", nargs="+")
     ap.add_argument("--profile", required=True)
     ap.add_argument("--markdown", action="store_true")
+    ap.add_argument("--no-timing", action="store_true", help="間のずれを出さない（元CMと違う台本のとき）")
     a = ap.parse_args()
     prof = json.loads(Path(a.profile).read_text())
     rows = [("元CM", prof, None, None, None)]
     for f in a.files:
         x = ac.load(f); v = ac.voice_only(x)
         rows.append((Path(f).stem, ac.voice_metrics(v), ac.ltas_distance(ac.ltas(v), prof["ltas_db"]),
-                     timing_error(x, prof["phrases_sec"]), len(x) / ac.SR))
+                     None if a.no_timing else timing_error(x, prof["phrases_sec"]), len(x) / ac.SR))
     head = ["", "長さ", "高さ（範囲）", "jitter", "shimmer", "HNR", "明るさ", "音色差", "間のずれ"]
     body = []
     for name, m, dist, terr, dur in rows:
