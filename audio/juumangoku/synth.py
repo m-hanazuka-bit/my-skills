@@ -22,9 +22,9 @@ def reverb(x,mix=0.35,dec=1.8):
     return np.stack([d+mix*L/s,d+mix*R/s],1)
 
 # ---- shakuhachi: one long note, scoop up from ~630Hz to ~690Hz (meri->kari), breathy, yuri vibrato
-def shakuhachi(dur=3.2,f0=690.):
+def shakuhachi(dur=3.6,f0=345.):
     t=np.arange(int(SR*dur))/SR
-    scoop=630+(f0-630)*(1-np.exp(-t/0.09))
+    scoop=f0*0.913+(f0-f0*0.913)*(1-np.exp(-t/0.09))
     vib_depth=np.clip((t-0.9)/0.8,0,1)*6.0          # yuri grows in later
     f=scoop+vib_depth*np.sin(2*np.pi*5.2*t)+1.5*lp(rng.standard_normal(len(t)),0.0005)*40
     ph=2*np.pi*np.cumsum(f)/SR
@@ -56,9 +56,9 @@ calls=[(0.20,4950,3050,.07,1),(0.52,4900,3000,.075,.9),(1.10,4300,3500,.05,.5),(
 bd=birds(3.6,calls); bd_st=reverb(bd,0.55,1.3)
 amb=lp(rng.standard_normal(len(bd_st)),0.02)*0.004   # faint outdoor air
 bd_st+=np.stack([amb,np.roll(amb,500)],1)
-save('/home/user/my-skills/output/shakuhachi.wav',sh_st)
-save('/home/user/my-skills/output/birds.wav',bd_st)
+save('/home/user/my-skills/audio/juumangoku/shakuhachi.wav',sh_st)
+save('/home/user/my-skills/audio/juumangoku/birds.wav',bd_st)
 # combined, timing like the CM: shakuhachi at 0s, birds from ~2.5s
 n=int(SR*7.5); mix=np.zeros((n,2)); mix[:len(sh_st)]+=sh_st/np.abs(sh_st).max()
 o=int(SR*2.5); mix[o:o+len(bd_st)]+=0.55*bd_st[:n-o]/np.abs(bd_st).max()
-save('/home/user/my-skills/output/shakuhachi_birds_mix.wav',mix)
+save('/home/user/my-skills/audio/juumangoku/shakuhachi_birds_mix.wav',mix)
