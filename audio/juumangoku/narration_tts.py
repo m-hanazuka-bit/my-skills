@@ -23,7 +23,11 @@ STYLE = (
 def synth(api_key, model, voice, text):
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
     body = {
-        "contents": [{"parts": [{"text": f"{STYLE}\n\n{text}"}]}],
+        # 演出指示ごと読み上げられないよう、指示と台本を見出しで分け「台本だけ読む」と明示する
+        "contents": [{"parts": [{"text": (
+            f"### 演出メモ（読み上げない）\n{STYLE}\n\n"
+            f"### 台本（ここだけを読み上げる）\n{text}"
+        )}]}],
         "generationConfig": {
             "responseModalities": ["AUDIO"],
             "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": voice}}},
