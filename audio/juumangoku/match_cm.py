@@ -2,7 +2,7 @@
 
   1. 句ごとに切り出し、元CMと同じ開始時刻に並べ直す（間を合わせる）
   2. 声の高さ（F0中央値）を元CMに合わせる（フォルマントは保つ）
-  3. 軽い歪みで濁りを足す
+  3. 軽い歪みで濁りを足し、息の成分でかすれを足す
   4. 元CMの長時間平均スペクトルに合わせてEQする（古いテレビCMの帯域・中域の張り）
 
 使い方:
@@ -141,6 +141,44 @@ def grit(x, drive):
     return np.tanh(drive * x) / np.tanh(drive)
 
 
+def lpc(frame, order):
+    """自己相関法＋Levinson-Durbin で LPC 係数 [1, a1..ap] を返す。"""
+    r = np.correlate(frame, frame, "full")[len(frame) - 1:len(frame) + order]
+    if r[0] <= 0: return np.r_[1.0, np.zeros(order)]
+    r[0] *= 1 + 1e-9
+    a = np.zeros(order + 1); a[0] = 1.0; err = r[0]
+    for i in range(1, order + 1):
+        k = -(r[i] + a[1:i] @ r[i - 1:0:-1]) / err
+        a[1:i + 1] = a[1:i + 1] + k * np.r_[a[i - 1:0:-1], 1.0]
+        err *= 1 - k * k
+    return a
+
+
+def husk(x, amount, order=20, seed=0):
+    """かすれ（息漏れ）を足す。声の母音の響き（LPC包絡）で白色雑音を色付けした「ささやき声」を作り、
+    声の音量に沿わせて混ぜる。amount は声に対する息成分の比（0で無効、0.3〜1くらい）。"""
+    if amount <= 0: return x
+    n, hop = 1024, 256; win = np.hanning(n)
+    noise = np.random.default_rng(seed).standard_normal(len(x) + n)
+    pre = np.r_[x[0], x[1:] - 0.9 * x[:-1]]  # プリエンファシスで高域の包絡も拾う
+    out = np.zeros(len(x) + n); norm = np.zeros(len(x) + n)
+    for i in range(0, len(x) - n, hop):
+        fr = pre[i:i + n] * win
+        a = lpc(fr, order)
+        # 全極フィルタ 1/A(z) を周波数領域でかける
+        N = np.fft.rfft(noise[i:i + n] * win)
+        H = 1 / np.abs(np.fft.rfft(a, n))
+        w = np.fft.irfft(N * H, n)
+        e = np.sqrt((x[i:i + n] ** 2 * win).mean())  # 声の音量に沿わせる
+        out[i:i + n] += w / (np.sqrt((w * w).mean()) + 1e-12) * e * win
+        norm[i:i + n] += win ** 2
+    breath = out[:len(x)] / np.maximum(norm[:len(x)], 1e-3)
+    # 息は高めの帯域に多いので 1kHz 以下を弱める
+    breath = breath - np.convolve(breath, np.ones(24) / 24, "same")
+    breath *= np.sqrt((x * x).mean()) / (np.sqrt((breath * breath).mean()) + 1e-12)
+    return x + amount * breath
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("inputs", nargs="+")
@@ -148,15 +186,18 @@ def main():
     ap.add_argument("--ref-start", type=float, default=7.0)
     ap.add_argument("--ref-end", type=float, default=17.4)
     ap.add_argument("--drive", type=float, default=3.0, help="濁りの強さ（0で無効）")
+    ap.add_argument("--husk", type=float, default=0.0, help="かすれの強さ（0で無効、0.3〜1くらい）")
+    ap.add_argument("--suffix", default="_cm", help="出力ファイル名の末尾")
     a = ap.parse_args()
     prof = measure_profile(a.ref, a.ref_start, a.ref_end) if a.ref else json.loads(PROFILE.read_text())
     for p in a.inputs:
         x = retime(load(p), prof["phrase_onsets_sec"])
         x = match_pitch(x, prof["f0_median_hz"])
         x = grit(x, a.drive)
+        x = husk(x, a.husk)
         x = match_eq(x, prof["ltas_db"])
         x = match_eq(x, prof["ltas_db"])  # 歪みとEQの相互作用を詰めるため2回
-        out = HERE / (Path(p).stem + "_cm.wav")
+        out = HERE / (Path(p).stem + a.suffix + ".wav")
         save(out, x)
         print("wrote", out)
 
