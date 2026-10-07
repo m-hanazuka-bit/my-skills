@@ -8,5 +8,6 @@ Claude のエージェントスキル集。
 | [belc-gu-product-video](belc-gu-product-video/SKILL.md) | ぐぅ（ベルクのペンギン）が関西弁で自慢げに商品を紹介する動画 |
 | [belc-bellcook-product-video](belc-bellcook-product-video/SKILL.md) | ベルクックさんが丁寧にやさしく商品を紹介する動画 |
 | [belc-product-video](belc-product-video/WORKFLOW.md) | 上の 2 つが使う共通エンジン（キャラ設定・台本チェック・Gemini TTS・音声分割・画面テンプレート） |
+| [cm-narration-match](cm-narration-match/SKILL.md) | 参考CMのナレーションを解析し、Gemini TTS の声を元CMの台本・間・声の高さ・音色に数値で寄せる |
 
 ベルクのキャラクタースキルを使うときは `beat-motion-video` / `belc-product-video` / キャラのスキルを同じ skills フォルダに並べる。
