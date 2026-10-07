@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
-"""尺八 →「風が語りかけます。」→ 鳥のさえずり → 清水ナレーション を 1 本の音声にする。
+"""尺八 →「風が語りかけます。」→ 鳥のさえずり → ナレーション を 1 本の音声にする。
 
-  python3 audio/shimizu/build_cm.py
-  python3 audio/shimizu/build_cm.py --shimizu audio/shimizu/tts_Algenib_cm.wav   # 清水の別テイクで作る
+  python3 audio/build_cm.py --narration audio/shimizu/tts_Algenib_3_cm.wav --out audio/shimizu/shimizu_cm_full.wav
+  python3 audio/build_cm.py --narration audio/belc/tts_Algenib_cm.wav --out audio/belc/belc_cm_full.wav
 
-出力: audio/shimizu/shimizu_cm_full.wav（44.1kHz / 16bit / stereo）と .mp3
+出力: --out の wav（44.1kHz / 16bit / stereo）と、同じ名前の .mp3
 """
 import argparse, subprocess, wave
 from pathlib import Path
 
 import numpy as np
 
-HERE = Path(__file__).resolve().parent
-AUDIO = HERE.parent
+AUDIO = Path(__file__).resolve().parent
 SR = 44100
 
 
@@ -35,11 +34,11 @@ def voice_rms_db(x):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--shimizu", default=HERE / "tts_Algenib_3_cm.wav", help="清水ナレーションのファイル")
+    ap.add_argument("--narration", required=True, help="鳥のさえずりのあとに流すナレーション")
     ap.add_argument("--kaze", default=AUDIO / "juumangoku/narration_Algenib_cm.wav",
                     help="「風が語りかけます」を切り出す元（十万石の採用版）")
     ap.add_argument("--kaze-range", default="0.54,2.84", help="切り出す範囲（秒）")
-    ap.add_argument("--out", default=HERE / "shimizu_cm_full.wav")
+    ap.add_argument("--out", required=True)
     a = ap.parse_args()
 
     shaku = load(AUDIO / "juumangoku/shakuhachi.wav")
@@ -48,16 +47,16 @@ def main():
     kaze = load(a.kaze)[int(k0 * SR):int(k1 * SR)]
     kaze[:int(0.02 * SR)] *= np.linspace(0, 1, int(0.02 * SR))[:, None]  # 切り口のプチッを防ぐ
     kaze[-int(0.08 * SR):] *= np.linspace(1, 0, int(0.08 * SR))[:, None]
-    shimizu = load(a.shimizu)
+    narr = load(a.narration)
 
     # 音量：声を基準に、尺八は声より 2dB、鳥は声より 4dB 控えめ（鳴っている所の音量で比べる）
-    v = voice_rms_db(np.vstack([kaze, shimizu]))
+    v = voice_rms_db(np.vstack([kaze, narr]))
     shaku *= 10 ** ((v - 2 - voice_rms_db(shaku)) / 20)
     birds *= 10 ** ((v - 4 - voice_rms_db(birds)) / 20)
 
     # 並べる時刻（秒）。尺八は 3.3 秒ほどで消えはじめるので、余韻に声をかぶせる
     parts = [(0.0, shaku, "尺八"), (3.6, kaze, "風が語りかけます。"),
-             (6.6, birds, "鳥のさえずり"), (10.1, shimizu, "清水ナレーション")]
+             (6.6, birds, "鳥のさえずり"), (10.1, narr, Path(a.narration).name)]
     end = max(t + len(x) / SR for t, x, _ in parts) + 0.5
     mix = np.zeros((int(end * SR), 2))
     for t, x, name in parts:

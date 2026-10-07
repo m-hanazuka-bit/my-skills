@@ -31,7 +31,6 @@ python $S/match_ref.py --profile cm-narration-match/examples/juumangoku/profile.
 | 10.1 秒〜 | 清水です。うまい、うますぎる。きよいみずとかいて、しみず。 | `tts_Algenib_3_cm.wav` |
 
 ```bash
-python3 audio/shimizu/build_cm.py                                         # 作り直す
-python3 audio/shimizu/build_cm.py --shimizu audio/shimizu/tts_Algenib_cm.wav  # 清水を別テイクにする
+python3 audio/build_cm.py --narration audio/shimizu/tts_Algenib_3_cm.wav --out audio/shimizu/shimizu_cm_full.wav
 ```
-時刻と音量は `build_cm.py` の `parts` と音量の行で変えられる。
+清水を別テイクにするときは `--narration` を変える。時刻と音量は `audio/build_cm.py` の `parts` と音量の行で変えられる。
