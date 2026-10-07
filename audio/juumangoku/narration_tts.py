@@ -2,7 +2,7 @@
 
 使い方:
   GEMINI_API_KEY を環境変数に設定してから
-  python3 narration_tts.py --model <モデルID> [--voice Charon Algenib ...] [--text narration.txt]
+  python3 narration_tts.py [--model gemini-3.8-flash-tts] [--voice Charon Algenib ...] [--text narration.txt]
 
 声ごとに narration_<voice>.wav を出力する（24kHz / 16bit / mono）。
 """
@@ -40,7 +40,7 @@ def synth(api_key, model, voice, text):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model", required=True, help="使用するTTSモデルID")
+    ap.add_argument("--model", default="gemini-3.8-flash-tts", help="使用するTTSモデルID")
     ap.add_argument("--voice", nargs="+", default=["Charon", "Algenib", "Orus"])
     ap.add_argument("--text", default=HERE / "narration.txt")
     a = ap.parse_args()
