@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8">
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+  :root { --round: "Zen Maru Gothic", sans-serif; --display: "Dela Gothic One", sans-serif; }
+  html, body { margin: 0; width: 1920px; height: 1080px; background: #fff6e8; font-family: var(--round); color: #2d2a32; }
+  h1 { position: absolute; left: 60px; top: 30px; margin: 0; font: 400 56px var(--display); }
+  h1 small { font: 700 26px var(--round); margin-left: 20px; color: #8a7f74; }
+  svg { position: absolute; left: 0; top: 0; }
+</style></head>
+<body>
+<h1>家庭内序列5位パパ<small>キャラクター設定 v1</small></h1>
+<svg id="s" width="1920" height="1080" viewBox="0 0 1920 1080"></svg>
+<script src="characters.js"></script>
+<script>
+  const C = window.Chars;
+  const cast = [
+    ["tsuma", "妻", "1位", "家庭の絶対王者。ボブ。\nキッチンの番人"],
+    ["musuko", "息子（10歳）", "2位（時々1位）", "家庭内の策士。\n義父のスマホでYouTube"],
+    ["ane", "義姉", "3位", "妻のお姉さん。独身。\nメガネ。アイドルの推し活中"],
+    ["gifu", "義父", "4位", "白髪。娘2人のためなら\n何でもやる優しい人"],
+    ["papa", "パパ", "5位（不動）", "メガネ。往復3時間の\n高速通勤。6時前に出発"],
+  ];
+  let s = "";
+  cast.forEach(([id, name, rank, desc], i) => {
+    const x = 200 + i * 380;
+    s += `<rect x="${x - 170}" y="130" width="340" height="560" rx="28" fill="#fff" stroke="#2d2a32" stroke-width="4"/>`;
+    s += `<rect x="${x - 110}" y="110" width="220" height="50" rx="25" fill="${id === "papa" ? "#5b6b8f" : "#e86a5a"}"/>`;
+    s += `<text x="${x}" y="145" font-size="28" font-weight="900" fill="#fff" text-anchor="middle">${rank}</text>`;
+    s += C.place(id, x, 560, 1.15);
+    s += `<text x="${x}" y="608" font-size="36" font-weight="900" text-anchor="middle">${name}</text>`;
+    desc.split("\n").forEach((l, j) => s += `<text x="${x}" y="${646 + j * 30}" font-size="22" font-weight="700" fill="#6d645c" text-anchor="middle">${l}</text>`);
+  });
+  // パパの表情バリエーション
+  s += `<text x="60" y="760" font-size="30" font-weight="900">パパの表情</text>`;
+  ["tired", "normal", "shock", "sad", "cry", "happy", "sleep"].forEach((e, i) => {
+    const x = 160 + i * 250;
+    s += C.placeHead("papa", x, 880, 0.95, { expr: e });
+    s += `<text x="${x}" y="1010" font-size="24" font-weight="700" fill="#6d645c" text-anchor="middle">${{tired:"いつもの",normal:"ふつう",shock:"がーん",sad:"しょんぼり",cry:"号泣",happy:"うれしい",sleep:"寝落ち"}[e]}</text>`;
+  });
+  document.getElementById("s").innerHTML = s;
+  window.EPISODE = { w: 1920, h: 1080, fps: 30, duration: 1 };
+  window.seek = () => {};
+  window.__ready = true;
+</script>
+</body></html>

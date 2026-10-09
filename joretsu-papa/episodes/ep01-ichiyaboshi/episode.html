@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8">
+<title>第1話 一夜干しパパ</title>
+<link rel="stylesheet" href="../../assets/fonts/fonts.css">
+<style>
+  :root { --round: "Zen Maru Gothic", sans-serif; --display: "Dela Gothic One", sans-serif; --ink: #2d2a32; }
+  html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #fff6e8; font-family: var(--round); color: var(--ink); }
+  #v { position: absolute; left: 0; top: 0; }
+  #cap {
+    position: absolute; left: 40px; top: 1418px; width: 900px; min-height: 196px; box-sizing: border-box;
+    padding: 30px 34px; background: #fff; border: 6px solid var(--ink); border-radius: 32px;
+    font: 900 50px/1.4 var(--round); text-align: center; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 10px 0 var(--ink);
+  }
+  #cap.fixed { background: #ffd84a; }
+  #cap .who { position: absolute; left: 30px; top: -26px; background: var(--ink); color: #fff; font: 700 28px var(--round); padding: 4px 18px; border-radius: 20px; }
+</style></head>
+<body>
+<svg id="v" width="1080" height="1920" viewBox="0 0 1080 1920">
+  <defs>
+    <linearGradient id="night" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#10152e"/><stop offset="1" stop-color="#2d3a6e"/></linearGradient>
+    <linearGradient id="dawn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6f9fd8"/><stop offset=".65" stop-color="#ffc38a"/><stop offset="1" stop-color="#ff9d6c"/></linearGradient>
+    <linearGradient id="rainy" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8d9bb0"/><stop offset="1" stop-color="#c3ccd8"/></linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d2347"/><stop offset="1" stop-color="#39407a"/></linearGradient>
+    <radialGradient id="spot" cx=".5" cy=".55" r=".5"><stop offset="0" stop-color="#fff3c4" stop-opacity=".55"/><stop offset="1" stop-color="#fff3c4" stop-opacity="0"/></radialGradient>
+    <radialGradient id="lamp" cx=".3" cy=".7" r=".8"><stop offset="0" stop-color="#ffe3b0"/><stop offset="1" stop-color="#b98a5e"/></radialGradient>
+    <clipPath id="stageClip"><rect x="0" y="0" width="1080" height="1180"/></clipPath>
+    <clipPath id="bubbleClip"><circle cx="0" cy="0" r="220"/></clipPath>
+    <pattern id="dots" width="36" height="36" patternUnits="userSpaceOnUse"><circle cx="6" cy="6" r="4" fill="#f1e2c9"/></pattern>
+  </defs>
+  <rect width="1080" height="1920" fill="url(#dots)"/>
+  <g id="header"></g>
+  <g id="stage" transform="translate(0 200)"></g>
+</svg>
+<div id="cap"><span class="who">パパ</span><span id="capText"></span></div>
+
+<script src="../../assets/characters.js"></script>
+<script>
+const C = window.Chars, INK = C.INK;
+window.EPISODE = { w: 1080, h: 1920, fps: 30, duration: 60 };
+
+// ---------- 台本（ナレーション = テロップ） ----------
+// fixed: 決め台詞（黄色いテロップ）
+const LINES = [
+  [0, 3, "パンツが、イカになっていた。"],
+  [3, 9, "現在、午前4時50分。<br>家族はまだ、誰も起きていません。", "fixed"],
+  [9, 14, "タンスを開けると、<br>パンツが、ない。"],
+  [14, 18.5, "雨が3日続いた我が家。<br>洗濯の順番は、序列のとおり。"],
+  [18.5, 22, "パパのパンツは、<br>いつも最後です。"],
+  [22, 26, "夜に洗われ、<br>真冬の庭で一晩。"],
+  [26, 30, "見た目は、<br>ほぼイカの一夜干し。"],
+  [30, 34, "ここでパパは、<br>発想を転換します。", "fixed"],
+  [34, 41, "助手席のシートヒーターで、<br>通勤しながら乾かす作戦。"],
+  [41, 46, "乾いた。でも車の中が、<br>干物のにおいになった。"],
+  [46, 50, "…まあ、いいんです。<br>パパなので。", "fixed"],
+  [50, 55, "その夜。お義父さんが<br>こっそり部屋に干してくれていた。"],
+  [55, 60, "本日の家庭内序列。パパ、5位。<br>前日比、変動なし。", "fixed"],
+];
+
+// ---------- 小道具 ----------
+const cl = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const lerp = (a, b, k) => a + (b - a) * k;
+const ease = x => { x = cl(x); return x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2; };
+const back = x => { x = cl(x); const c1 = 1.9, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+const pop = (lt, t0, d = .35) => lt < t0 ? 0 : back((lt - t0) / d);
+const mixHex = (a, b, k) => { const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); const A = p(a), B = p(b); return "#" + A.map((v, i) => Math.round(lerp(v, B[i], k)).toString(16).padStart(2, "0")).join(""); };
+const T = (x, y, s = 1, r = 0) => `translate(${x} ${y}) rotate(${r}) scale(${s})`;
+const txt = (x, y, str, o = {}) => `<text x="${x}" y="${y}" font-family="${o.font || "var(--round)"}" font-size="${o.size || 48}" font-weight="${o.weight || 900}" fill="${o.fill || INK}" text-anchor="${o.anchor || "middle"}" ${o.stroke ? `stroke="${o.stroke}" stroke-width="${o.sw || 10}" paint-order="stroke" stroke-linejoin="round"` : ""} ${o.extra || ""}>${str}</text>`;
+const popText = (lt, t0, x, y, str, o = {}) => lt < t0 ? "" : `<g transform="${T(x, y, pop(lt, t0), o.rot || 0)}">${txt(0, 0, str, o)}</g>`;
+
+// パパのトランクス（中心 = ウエストの中央）。ice: 0〜1 で凍る
+function pants(x, y, s, o = {}) {
+  const ice = o.ice || 0;
+  const base = mixHex("#7fb2e5", "#e3f4ff", ice), band = mixHex("#ffffff", "#f4fbff", ice);
+  let g = `<path d="M-66 0 L66 0 L74 96 L14 102 L0 50 L-14 102 L-74 96 Z" fill="${base}" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/>
+    <rect x="-68" y="-14" width="136" height="20" rx="6" fill="${band}" stroke="${INK}" stroke-width="5"/>`;
+  for (let i = -2; i <= 2; i++) g += `<line x1="${i * 26}" y1="12" x2="${i * 28 + (i < 0 ? -6 : 6)}" y2="${i === 0 ? 46 : 92}" stroke="#ffffff" stroke-width="6" opacity="${.6 - ice * .4}"/>`;
+  if (ice > .3) {
+    const L = (ice - .3) / .7;
+    [[-60, 96], [-36, 98], [30, 100], [56, 98], [-8, 60], [6, 62]].forEach(([ix, iy], i) => {
+      const h = (16 + (i % 3) * 10) * L;
+      g += `<path d="M${ix - 6} ${iy} L${ix} ${iy + h} L${ix + 6} ${iy} Z" fill="#cfefff" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>`;
+    });
+    g += `<path d="M-40 30 l8 -8 l8 8 l-8 8 Z M38 54 l6 -6 l6 6 l-6 6 Z" fill="#fff" opacity="${L}"/>`;
+  }
+  if (o.steam) g += [-30, 0, 30].map((sx, i) => `<path d="M${sx} -30 q -10 -20 0 -40 q 10 -20 0 -40" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" opacity="${o.steam * (.5 + .5 * Math.sin(o.lt * 6 + i))}" transform="translate(0 ${-((o.lt * 40 + i * 20) % 30)})"/>`).join("");
+  return `<g transform="${T(x, y, s, o.rot || 0)}">${o.hanger !== false ? `<path d="M-50 -14 L-50 -34 M50 -14 L50 -34" stroke="#c4c4c4" stroke-width="6"/><rect x="-60" y="-44" width="22" height="14" rx="3" fill="#ff7aa2" stroke="${INK}" stroke-width="3"/><rect x="38" y="-44" width="22" height="14" rx="3" fill="#ff7aa2" stroke="${INK}" stroke-width="3"/>` : ""}${g}</g>`;
+}
+
+// イカの一夜干し（中心 = 上端）
+function squid(x, y, s, r = 0) {
+  return `<g transform="${T(x, y, s, r)}">
+    <path d="M0 0 L46 50 L40 150 L-40 150 L-46 50 Z" fill="#f0c98c" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M-46 50 L-70 30 L-44 74 M46 50 L70 30 L44 74" fill="#f0c98c" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/>
+    ${[-30, -15, 0, 15, 30].map((tx, i) => `<path d="M${tx} 150 q ${i % 2 ? 8 : -8} 30 ${tx * .2} 70" fill="none" stroke="#e2b06c" stroke-width="10" stroke-linecap="round"/>`).join("")}
+    <circle cx="-16" cy="140" r="6" fill="${INK}"/><circle cx="16" cy="140" r="6" fill="${INK}"/>
+    <path d="M-20 70 Q0 80 20 70 M-24 100 Q0 110 24 100" fill="none" stroke="#d9a462" stroke-width="4"/>
+    <rect x="-8" y="-24" width="16" height="22" rx="3" fill="#ff7aa2" stroke="${INK}" stroke-width="3"/></g>`;
+}
+
+const stars = t => [[120, 120], [260, 60], [420, 160], [640, 90], [760, 220], [980, 140], [190, 300], [560, 260], [880, 330]]
+  .map(([x, y], i) => `<circle cx="${x}" cy="${y}" r="${3 + 2 * Math.abs(Math.sin(t * 2 + i))}" fill="#fff" opacity=".85"/>`).join("");
+const moon = (x, y) => `<circle cx="${x}" cy="${y}" r="70" fill="#fff6c9"/><circle cx="${x + 30}" cy="${y - 18}" r="62" fill="#1a2148"/>`;
+const clothesline = (y) => `<rect x="110" y="${y - 20}" width="18" height="${1000 - y}" fill="#8a7a6a" stroke="${INK}" stroke-width="4"/><rect x="952" y="${y - 20}" width="18" height="${1000 - y}" fill="#8a7a6a" stroke="${INK}" stroke-width="4"/><path d="M119 ${y} Q540 ${y + 40} 961 ${y}" fill="none" stroke="#dcdcdc" stroke-width="5"/>`;
+const snowGround = `<path d="M0 960 Q270 930 540 960 T1080 950 L1080 1180 L0 1180 Z" fill="#e8f1ff" stroke="${INK}" stroke-width="5"/>`;
+const rain = t => Array.from({ length: 40 }, (_, i) => { const x = (i * 97) % 1100, y = ((i * 211) + t * 1400) % 1260 - 80; return `<line x1="${x}" y1="${y}" x2="${x - 14}" y2="${y + 50}" stroke="#ffffff" stroke-width="4" opacity=".55"/>`; }).join("");
+const stamp = (lt, t0, x, y, str, o = {}) => lt < t0 ? "" : `<g transform="${T(x, y, lerp(1.8, 1, ease((lt - t0) / .18)), o.rot ?? -8)}" opacity="${cl((lt - t0) / .12)}">
+  <rect x="${-(o.w || 300) / 2}" y="-54" width="${o.w || 300}" height="96" rx="14" fill="${o.bg || "rgba(255,255,255,.9)"}" stroke="#d6312b" stroke-width="8"/>${txt(0, 14, str, { size: o.size || 52, fill: "#d6312b", font: "var(--display)", weight: 400 })}</g>`;
+
+// ---------- 場面 ----------
+const S = [];
+const scene = (a, b, f) => S.push({ a, b, f });
+
+// 1. フック：凍ったパンツ
+function hook(lt, t) {
+  const z = 1 + .05 * lt;
+  return `<rect width="1080" height="1180" fill="url(#night)"/>${stars(t)}${moon(880, 180)}
+    <g transform="translate(540 590) scale(${z}) translate(-540 -590)">${snowGround}${clothesline(380)}
+    ${pants(540, 420, 2.3, { ice: 1, rot: 5 * Math.sin(t * 2.4) })}</g>
+    ${popText(lt, .9, 820, 820, "カチカチ", { size: 76, font: "var(--display)", weight: 400, fill: "#bfe6ff", stroke: INK, sw: 12, rot: 10 })}
+    <g transform="${T(140, 120, 1, -12)}"><circle r="78" fill="#d6312b" stroke="#fff" stroke-width="6"/>${txt(0, 22, "実話", { size: 60, fill: "#fff", font: "var(--display)", weight: 400 })}</g>`;
+}
+scene(0, 3, hook);
+
+// 2. 時報
+scene(3, 9, (lt, t) => {
+  const colon = `<tspan opacity="${Math.floor(t * 2) % 2 ? 1 : .15}">:</tspan>`;
+  const sleeper = (id, x, y, i) => `${C.placeHead(id, x, y, .62, { expr: "sleep" })}${txt(x + 58, y - 54 - ((lt * 30 + i * 12) % 30), "Zz", { size: 40, fill: "#9fb4ff", font: "var(--display)", weight: 400 })}`;
+  return `<rect width="1080" height="1180" fill="#20243b"/>
+    <rect x="740" y="420" width="250" height="300" rx="10" fill="#141a36" stroke="#4a4f70" stroke-width="10"/>${moon(870, 520).replace("#1a2148", "#141a36")}
+    <g transform="translate(540 200)"><rect x="-280" y="-110" width="560" height="220" rx="30" fill="#0d0f18" stroke="#4a4f70" stroke-width="8"/>
+      ${txt(-205, 55, "AM", { size: 50, fill: "#7cf3a0", font: "var(--display)", weight: 400 })}
+      ${txt(55, 66, "4" + colon + "50", { size: 138, fill: "#7cf3a0", font: "var(--display)", weight: 400 })}</g>
+    ${sleeper("tsuma", 130, 520, 0)}${sleeper("musuko", 130, 720, 1)}${sleeper("ane", 130, 920, 2)}${sleeper("gifu", 300, 1050, 3)}
+    ${C.place("papa", 580, 1150, 2.15, { outfit: "pajama", expr: "tired" })}
+    ${popText(lt, 1.6, 900, 1060, "全員就寝中", { size: 44, fill: "#fff", stroke: "#20243b", sw: 8 })}`;
+});
+
+// 3. タンスが空
+scene(9, 14, (lt, t) => {
+  const open = ease((lt - .3) / .6), shock = lt > 1.4;
+  const shake = shock && lt < 1.9 ? Math.sin(lt * 90) * 10 : 0;
+  let tansu = `<rect x="110" y="480" width="460" height="580" rx="16" fill="#b9875a" stroke="${INK}" stroke-width="6"/>`;
+  [600, 760, 920].forEach(y => tansu += `<rect x="140" y="${y}" width="400" height="130" rx="10" fill="#c99868" stroke="${INK}" stroke-width="5"/><rect x="310" y="${y + 55}" width="60" height="18" rx="9" fill="${INK}"/>`);
+  const dy = 140 * open;
+  tansu += `<g transform="translate(${-40 * open} ${-dy * .2})"><rect x="140" y="${470 - dy}" width="400" height="${130 + dy * .4}" rx="10" fill="#5a3d26" stroke="${INK}" stroke-width="5"/>
+    <rect x="130" y="${520}" width="420" height="120" rx="10" fill="#c99868" stroke="${INK}" stroke-width="5"/><rect x="310" y="572" width="60" height="18" rx="9" fill="${INK}"/>
+    ${open > .9 ? txt(340, 470 - dy + 80, "からっぽ", { size: 44, fill: "#e8d2b8" }) : ""}</g>`;
+  return `<rect width="1080" height="1180" fill="#2a2e4a"/><rect y="1060" width="1080" height="120" fill="#4a3f5a"/>
+    ${tansu}<g transform="translate(${shake} 0)">${C.place("papa", 800, 1120, 2.0, { outfit: "pajama", expr: shock ? "shock" : "normal", pose: shock ? "up" : "point" })}</g>
+    ${popText(lt, 1.4, 760, 260, "ガーン", { size: 150, font: "var(--display)", weight: 400, fill: "#fff", stroke: INK, sw: 16, rot: -6 })}`;
+});
+
+// 4. 洗濯の優先順位
+scene(14, 22, (lt, t) => {
+  const rows = [["tsuma", "妻の服"], ["musuko", "息子の体操服"], ["ane", "義姉の推しTシャツ"], ["gifu", "義父の肌着"], ["papa", "パパのパンツ"]];
+  const appear = [.5, 1.1, 1.7, 2.3, 4.6];
+  const thud = lt > 4.6 && lt < 5.0 ? Math.sin(lt * 80) * 8 : 0;
+  let board = `<rect x="80" y="180" width="920" height="880" rx="36" fill="#fffdf6" stroke="${INK}" stroke-width="6"/>${txt(540, 268, "洗濯の優先順位", { size: 62 })}<line x1="160" y1="300" x2="920" y2="300" stroke="${INK}" stroke-width="4" stroke-dasharray="12 10"/>`;
+  rows.forEach(([id, label], i) => {
+    if (lt < appear[i]) return;
+    const k = ease((lt - appear[i]) / .3), y = 380 + i * 148, last = i === 4;
+    board += `<g transform="translate(${(1 - k) * 600} 0)" opacity="${k}">
+      ${last ? `<rect x="110" y="${y - 70}" width="860" height="140" rx="20" fill="#ffe1dc"/>` : ""}
+      <circle cx="190" cy="${y}" r="44" fill="${last ? "#d6312b" : INK}"/>${txt(190, y + 18, i + 1, { size: 50, fill: "#fff", font: "var(--display)", weight: 400 })}
+      ${C.placeHead(id, 310, y, .55, last ? { expr: "sad" } : {})}
+      ${txt(390, y + 18, label, { size: 50, anchor: "start", fill: last ? "#d6312b" : INK })}
+      ${last ? pants(880, y - 30, .55, { hanger: false }) : ""}</g>`;
+  });
+  return `<rect width="1080" height="1180" fill="url(#rainy)"/>${rain(t)}
+    <g transform="translate(540 92)"><rect x="-230" y="-56" width="460" height="104" rx="52" fill="#3e5b8a" stroke="${INK}" stroke-width="5"/>${txt(0, 18, "☂ 雨 3日連続", { size: 52, fill: "#fff" })}</g>
+    <g transform="translate(${thud} 0)">${board}</g>
+    ${stamp(lt, 5.0, 760, 1080, "いつも最後", { w: 380 })}`;
+});
+
+// 5. 一夜干し
+scene(22, 30, (lt, t) => {
+  const ice = ease(lt / 3.4), cmp = ease((lt - 4) / .6);
+  const px = lerp(540, 300, cmp);
+  return `<rect width="1080" height="1180" fill="url(#night)"/>${stars(t)}${moon(140, 160)}${snowGround}${clothesline(380)}
+    <g transform="translate(870 140)"><rect x="-110" y="-46" width="220" height="92" rx="46" fill="#0d0f18" stroke="#4a4f70" stroke-width="5"/>${txt(0, 18, "AM 2:00", { size: 46, fill: "#7cf3a0", font: "var(--display)", weight: 400 })}</g>
+    <g transform="translate(${lerp(900, 980, cmp)} 560)" opacity="${1 - cmp}"><rect x="-26" y="-180" width="52" height="300" rx="26" fill="#fff" stroke="${INK}" stroke-width="5"/><circle cy="140" r="44" fill="#e34b4b" stroke="${INK}" stroke-width="5"/><rect x="-10" y="${lerp(-120, 40, ice)}" width="20" height="${lerp(250, 100, ice)}" fill="#e34b4b"/>${txt(-60, -120, lt > 1 ? "−3℃" : "", { size: 54, anchor: "end", fill: "#bfe6ff", stroke: INK, sw: 10 })}</g>
+    ${pants(px, 420, lerp(2.3, 1.9, cmp), { ice, rot: 4 * Math.sin(t * 2) })}
+    ${cmp > 0 ? `<g opacity="${cmp}">${squid(780, 400, 1.55, 4 * Math.sin(t * 2 + 1))}
+      ${txt(px, 820, "パパのパンツ", { size: 46, fill: "#fff", stroke: "#1a2148", sw: 8 })}${txt(780, 820, "イカの一夜干し", { size: 46, fill: "#fff", stroke: "#1a2148", sw: 8 })}</g>` : ""}
+    ${popText(lt, 4.5, 545, 590, "＝", { size: 140, font: "var(--display)", weight: 400, fill: "#ffd84a", stroke: INK, sw: 12 })}
+    ${stamp(lt, 5.3, 540, 1020, "ほぼ同じ", { w: 340, rot: -6 })}`;
+});
+
+// 6. 発想の転換（毎回同じ演出）
+scene(30, 34, (lt, t) => {
+  let rays = "";
+  for (let i = 0; i < 16; i++) rays += `<path d="M0 0 L${Math.cos((i / 16) * Math.PI * 2) * 1400} ${Math.sin((i / 16) * Math.PI * 2) * 1400} L${Math.cos(((i + .5) / 16) * Math.PI * 2) * 1400} ${Math.sin(((i + .5) / 16) * Math.PI * 2) * 1400} Z" fill="#ffe680"/>`;
+  const glint = cl((lt - .5) / .35);
+  return `<rect width="1080" height="1180" fill="#ffd23f"/><g transform="translate(540 700) rotate(${t * 20})">${rays}</g>
+    <g transform="${T(540, 270, pop(lt, .1, .4), -3)}">${txt(0, -10, "ここで", { size: 70, fill: INK })}${txt(0, 150, "発想の転換", { size: 150, font: "var(--display)", weight: 400, fill: "#d6312b", stroke: "#fff", sw: 22 })}</g>
+    ${C.place("papa", 540, 1170, 1.9, { expr: lt > .5 ? "happy" : "normal", pose: lt > .5 ? "up" : "down" })}
+    ${glint > 0 && glint < 1 ? `<g transform="translate(540 ${1170 - 194 * 1.9}) scale(1.9)"><path d="M${-50 + glint * 100} -14 L${-30 + glint * 100} -14 L${-46 + glint * 100} 14 L${-66 + glint * 100} 14 Z" fill="#fff" opacity=".9"/></g>` : ""}
+    <g transform="${T(540, 1170 - 420 * 1.9 / 2 - 170, pop(lt, .55))}"><circle cy="-10" r="62" fill="#fff59a" stroke="${INK}" stroke-width="6"/><rect x="-28" y="44" width="56" height="34" rx="6" fill="#bdbdbd" stroke="${INK}" stroke-width="5"/>
+      ${[0, 1, 2, 3, 4, 5, 6, 7].map(i => `<line x1="${Math.cos(i * .785) * 82}" y1="${-10 + Math.sin(i * .785) * 82}" x2="${Math.cos(i * .785) * 110}" y2="${-10 + Math.sin(i * .785) * 110}" stroke="${INK}" stroke-width="6" stroke-linecap="round"/>`).join("")}</g>`;
+});
+
+// 7. 通勤しながら乾かす
+scene(34, 41, (lt, t) => {
+  const dry = ease(lt / 6);
+  let dashes = "";
+  for (let i = -1; i < 7; i++) dashes += `<rect x="${((i * 200 - lt * 900) % 1400 + 1400) % 1400 - 200}" y="925" width="110" height="14" fill="#fff"/>`;
+  const bob = Math.sin(t * 18) * 3;
+  const car = `<g transform="translate(540 ${880 + bob})">
+    <path d="M-300 0 L-300 -80 Q-290 -110 -250 -112 L-150 -116 L-90 -190 Q-70 -206 -40 -206 L120 -206 Q150 -206 170 -186 L230 -118 L290 -110 Q320 -104 320 -70 L320 0 Z" fill="#5c8fd6" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M-70 -120 L-30 -180 L40 -180 L40 -120 Z M60 -120 L60 -180 L130 -180 Q148 -180 160 -166 L200 -120 Z" fill="#cfe8ff" stroke="${INK}" stroke-width="5"/>
+    <g clip-path="url(#none)">${C.placeHead("papa", 110, -140, .38, { expr: "normal" })}</g>
+    <rect x="-310" y="-40" width="40" height="20" rx="6" fill="#ffd84a" stroke="${INK}" stroke-width="4"/>
+    ${[-180, 190].map(x => `<g transform="translate(${x} 0) rotate(${lt * 900})"><circle r="56" fill="#333" stroke="${INK}" stroke-width="6"/><circle r="24" fill="#bbb"/><rect x="-4" y="-24" width="8" height="48" fill="#888"/></g>`).join("")}</g>`;
+  const waves = [-90, -30, 30, 90].map((x, i) => `<path d="M${x} 90 q 14 -20 0 -40 q -14 -20 0 -40" fill="none" stroke="#ff5a3c" stroke-width="7" stroke-linecap="round" opacity="${.5 + .5 * Math.sin(lt * 8 + i)}" transform="translate(0 ${-((lt * 50 + i * 15) % 30)})"/>`).join("");
+  const bubble = `<g transform="translate(540 330)"><circle r="232" fill="#fff" stroke="${INK}" stroke-width="8"/>
+    <g clip-path="url(#bubbleClip)"><rect x="-240" y="-240" width="480" height="480" fill="#f4e2cf"/>
+      <path d="M-160 140 L-150 -60 Q-148 -110 -100 -112 L100 -112 Q148 -110 150 -60 L160 140 Z" fill="#6b5a7a" stroke="${INK}" stroke-width="6"/>
+      <path d="M-180 140 L180 140 L170 220 L-170 220 Z" fill="#5a4a68" stroke="${INK}" stroke-width="6"/>
+      ${waves}${pants(0, 20, 1.15, { ice: 1 - dry, hanger: false, steam: dry > .5 ? 1 : 0, lt })}</g>
+    <g transform="translate(0 270)"><rect x="-210" y="-40" width="420" height="72" rx="36" fill="#d6312b" stroke="${INK}" stroke-width="5"/><circle cx="-170" cy="-4" r="12" fill="#ffd84a"/>${txt(15, 12, "シートヒーター ON", { size: 40, fill: "#fff" })}</g></g>`;
+  return `<rect width="1080" height="1180" fill="url(#dawn)"/><circle cx="160" cy="${720 - lt * 14}" r="90" fill="#fff1b8" opacity=".9"/>
+    <path d="M0 760 L180 640 L330 740 L520 610 L720 750 L900 650 L1080 740 L1080 860 L0 860 Z" fill="#7d8fb3" opacity=".7"/>
+    <rect y="850" width="1080" height="200" fill="#5d5f6e" stroke="${INK}" stroke-width="6"/>${dashes}<rect y="1050" width="1080" height="130" fill="#8fb36b"/>
+    ${car}${bubble}
+    <g transform="translate(180 1110)"><rect x="-140" y="-44" width="280" height="84" rx="12" fill="#1f7a4d" stroke="#fff" stroke-width="6"/>${txt(0, 14, "片道1時間半", { size: 42, fill: "#fff" })}</g>`;
+});
+
+// 8. 乾いた。でも干物のにおい
+scene(41, 46, (lt, t) => {
+  const smell = lt > 1.8;
+  const X = 700, Y = 1110, k = 1.9;
+  let s = `<rect width="1080" height="1180" fill="#bfe0f7"/><rect x="60" y="120" width="560" height="760" fill="#d7dbe4" stroke="${INK}" stroke-width="6"/>${txt(340, 200, "本社ビル", { size: 50 })}`;
+  for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) s += `<rect x="${100 + c * 128}" y="${250 + r * 150}" width="90" height="100" fill="#9cc3e6" stroke="${INK}" stroke-width="4"/>`;
+  s += `<rect y="880" width="1080" height="300" fill="#8d8f99"/><line x1="0" y1="960" x2="1080" y2="960" stroke="#fff" stroke-width="6" stroke-dasharray="40 30"/>`;
+  s += `<g transform="translate(250 1030) scale(.62)"><path d="M-300 0 L-300 -80 Q-290 -110 -250 -112 L-150 -116 L-90 -190 Q-70 -206 -40 -206 L120 -206 Q150 -206 170 -186 L230 -118 L290 -110 Q320 -104 320 -70 L320 0 Z" fill="#5c8fd6" stroke="${INK}" stroke-width="9"/><circle cx="-180" r="56" fill="#333"/><circle cx="190" r="56" fill="#333"/></g>`;
+  if (smell) s += [0, 1, 2].map(i => `<path d="M${180 + i * 70} 860 q 20 -30 0 -60 q -20 -30 0 -60 q 20 -30 0 -60" fill="none" stroke="#9a6a3a" stroke-width="10" stroke-linecap="round" opacity="${cl((lt - 1.8) / .4) * .8}" transform="translate(0 ${-((lt * 40 + i * 20) % 40)})"/>`).join("");
+  s += C.place("papa", X, Y, k, { expr: smell ? "sad" : "happy", pose: "up" });
+  s += pants(X, Y - 640, 1.1, { hanger: false, steam: smell ? 0 : 1, lt });
+  s += popText(lt, .4, 900, 380, "カラッ", { size: 90, font: "var(--display)", weight: 400, fill: "#ffd84a", stroke: INK, sw: 14, rot: 8 });
+  s += popText(lt, 2.0, 300, 640, "干物のにおい…", { size: 64, fill: "#fff", stroke: "#6b4a2a", sw: 12, rot: -4 });
+  return s;
+});
+
+// 9. パパなので（毎回同じ演出）
+scene(46, 50, (lt, t) => `<rect width="1080" height="1180" fill="#3b4058"/><ellipse cx="540" cy="760" rx="420" ry="520" fill="url(#spot)"/>
+  <ellipse cx="540" cy="1090" rx="230" ry="40" fill="#2a2e40"/>
+  ${C.place("papa", 540, 1090, 2.1, { expr: lt > 2.2 ? "cry" : "sad", pose: "droop" })}
+  <g opacity="${cl(lt / .4)}">${txt(540, 170, "…まあ、いいんです。", { size: 62, fill: "#fff" })}</g>
+  ${popText(lt, 1.4, 540, 330, "パパなので。", { size: 120, font: "var(--display)", weight: 400, fill: "#ffd84a", stroke: INK, sw: 16 })}
+  <path d="M0 0 q 20 -14 40 0 q -20 14 -40 0 Z" fill="#c98a4a" transform="translate(${300 + lt * 60} ${420 + lt * 140}) rotate(${lt * 90})"/>`);
+
+// 10. 救い：お義父さん
+scene(50, 55, (lt, t) => {
+  let s = `<rect width="1080" height="1180" fill="url(#lamp)"/><rect x="80" y="160" width="300" height="280" rx="10" fill="#1a2148" stroke="${INK}" stroke-width="8"/>${moon(250, 260).replace("#1a2148", "#1a2148")}
+    <rect y="1050" width="1080" height="130" fill="#a8744a"/>`;
+  // ヒーター
+  s += `<g transform="translate(170 960)"><rect x="-90" y="-110" width="180" height="200" rx="16" fill="#efe6d8" stroke="${INK}" stroke-width="6"/>${[0, 1, 2].map(i => `<rect x="-60" y="${-80 + i * 40}" width="120" height="22" rx="11" fill="#ff7a3c" opacity="${.7 + .3 * Math.sin(t * 6 + i)}"/>`).join("")}</g>`;
+  // 物干しスタンド + パンツ + メモ
+  s += `<path d="M330 1050 L380 600 L480 600 L530 1050" fill="none" stroke="#9aa0a8" stroke-width="10"/><line x1="320" y1="610" x2="540" y2="610" stroke="#9aa0a8" stroke-width="10"/>`;
+  s += pants(430, 660, 1.3, { steam: .6, lt });
+  s += `<g transform="${T(450, 900, pop(lt, .8), -6)}"><rect x="-110" y="-70" width="220" height="140" fill="#fff27a" stroke="${INK}" stroke-width="4"/>${txt(0, 16, "乾いとるよ", { size: 44, fill: "#4a3a2a", weight: 700 })}</g>`;
+  s += C.place("gifu", 720, 1110, 1.85, { expr: "gentle", pose: "point", flip: true });
+  // ドアからのぞくパパ
+  s += `<rect x="930" y="300" width="160" height="760" fill="#c99868" stroke="${INK}" stroke-width="6"/>`;
+  const peek = ease((lt - 2.2) / .5);
+  if (peek > 0) s += `<g transform="translate(${lerp(1080, 960, peek)} 620)">${C.placeHead("papa", 0, 0, .75, { expr: "cry" })}</g>`;
+  [0, 1, 2].forEach(i => { if (lt > 2.8) s += `<path d="M0 8 C-14 -6 -10 -18 0 -10 C10 -18 14 -6 0 8 Z" fill="#ff6f91" transform="translate(${880 - i * 40} ${520 - ((lt - 2.8) * 80 + i * 30) % 120}) scale(2.4)"/>`; });
+  return s;
+});
+
+// 11. 本日の家庭内序列（毎回同じ演出）
+scene(55, 60, (lt, t) => {
+  const order = [["tsuma", "妻"], ["musuko", "息子"], ["ane", "義姉"], ["gifu", "義父"], ["papa", "パパ"]];
+  let s = `<rect width="1080" height="1180" fill="url(#gold)"/>${stars(t)}${txt(540, 130, "本日の家庭内序列", { size: 84, font: "var(--display)", weight: 400, fill: "#ffd84a", stroke: INK, sw: 12 })}`;
+  order.forEach(([id, name], i) => {
+    const t0 = .3 + i * .4; if (lt < t0) return;
+    const k = ease((lt - t0) / .3), y = 270 + i * 160, last = i === 4;
+    s += `<g transform="translate(${(1 - k) * 700} 0)" opacity="${k}"><rect x="90" y="${y - 66}" width="900" height="132" rx="66" fill="${last ? "#d6312b" : "#fffdf6"}" stroke="${INK}" stroke-width="6"/>
+      ${txt(200, y + 26, (i + 1) + "位", { size: 72, font: "var(--display)", weight: 400, fill: last ? "#fff" : (i === 0 ? "#c9932a" : INK) })}
+      ${C.placeHead(id, 380, y, .5, last ? { expr: "sad" } : {})}${txt(470, y + 22, name, { size: 64, anchor: "start", fill: last ? "#fff" : INK })}</g>`;
+  });
+  s += stamp(lt, 2.6, 540, 1080, "前日比 変動なし", { w: 560, size: 56, rot: -5 });
+  // ループ用：最後に冒頭のカットへ戻る
+  const back2hook = cl((lt - 4.65) / .35);
+  if (back2hook > 0) s += `<g opacity="${back2hook}">${hook(0, t)}</g>`;
+  return s;
+});
+
+// ---------- 描画 ----------
+const stage = document.getElementById("stage");
+document.getElementById("header").innerHTML = `<rect width="1080" height="190" fill="${INK}"/>
+  ${txt(56, 112, "家庭内序列5位パパ", { size: 66, anchor: "start", fill: "#fff", font: "var(--display)", weight: 400 })}
+  <rect x="770" y="58" width="260" height="76" rx="38" fill="#ffd84a"/>${txt(900, 110, "#1 一夜干し", { size: 38 })}`;
+const capBox = document.getElementById("cap"), capText = document.getElementById("capText");
+
+window.seek = t => {
+  const sc = S.find(s => t >= s.a && t < s.b) || S[S.length - 1];
+  const lt = t - sc.a;
+  const z = lerp(1.04, 1, ease(lt / .25));
+  stage.innerHTML = `<g clip-path="url(#stageClip)"><g transform="translate(540 590) scale(${z}) translate(-540 -590)">${sc.f(lt, t)}</g></g>
+    <rect width="1080" height="1180" fill="none" stroke="${INK}" stroke-width="8"/>`;
+  const line = LINES.find(l => t >= l[0] && t < l[1]) || LINES[LINES.length - 1];
+  capText.innerHTML = line[2];
+  capBox.className = line[3] || "";
+};
+window.seek(+(new URLSearchParams(location.search).get("t") || 0));
+window.__ready = true;
+</script>
+</body></html>
