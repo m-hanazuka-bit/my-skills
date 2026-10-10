@@ -12,7 +12,7 @@
     musuko: { name: "息子",   rank: 2, hair: "#2a2320", skin: SKIN, scale: 0.8 },
     ane:    { name: "義姉",   rank: 3, hair: "#3b2a2e", glasses: "#d0306b", skin: SKIN },
     gifu:   { name: "義父",   rank: 4, hair: "#f4f4f2", skin: "#f8d4b6" },
-    kohai:  { name: "後輩",   rank: 0, hair: "#8a5a34", skin: SKIN },  // 会社の後輩（メイン）
+    kohai:  { name: "年下上司", rank: 0, hair: "#8a5a34", skin: SKIN },  // 会社の上司（元後輩・年下）
   };
 
   // 服（outfit）ごとの色

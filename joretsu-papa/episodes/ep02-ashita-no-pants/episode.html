@@ -54,11 +54,11 @@ const LINES = [
   [22, 26, "部屋干しの場所も、<br>家族の服でいっぱい。"],
   [26, 30, "次の日。このままでは、<br>明日履くパンツがない。"],
   [30, 33, "「明日履くパンツがないので、<br>帰ります。」"],
-  [33, 36, "…いつも、大変ですね。", "", "後輩"],
+  [33, 36, "…いつも、大変ですね。", "", "年下上司"],
   [36, 40, "残業を断り、会社近くの<br>コインランドリーへ。"],
   [40, 44, "大きな乾燥機の中で、<br>パパのパンツだけが回っている。"],
   [44, 48, "それから片道1時間半かけて、<br>家に帰った。"],
-  [48, 52, "先輩、ちゃんと<br>きれいなパンツ履いてきました？", "", "後輩"],
+  [48, 52, "先輩、ちゃんと<br>きれいなパンツ履いてきました？", "", "年下上司"],
   [52, 57, "…まあ、いいんです。<br>パパなので。", "fixed"],
 ];
 
@@ -138,6 +138,7 @@ function office(lt, t, o = {}) {
   if (lt > o.bowAt && !kohaiTalk) s += `<g transform="${T(540, 500, pop(lt, o.bowAt))}"><rect x="-470" y="-110" width="940" height="220" rx="40" fill="#fff" stroke="${INK}" stroke-width="7"/>
     <path d="M-40 106 L0 190 L40 106 Z" fill="#fff" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/><rect x="-46" y="94" width="92" height="20" fill="#fff"/>
     ${txt(0, -14, "明日履くパンツがないので、", { size: 62 })}${txt(0, 72, "帰ります。", { size: 62 })}</g>`;
+  if (o.bossTag) s += `<g transform="${T(290, 1110, pop(lt, o.bossTag))}"><rect x="-175" y="-30" width="350" height="60" rx="30" fill="#2f8a52" stroke="${INK}" stroke-width="4"/>${txt(0, 13, "年下の上司（元後輩）", { size: 30, fill: "#fff" })}</g>`;
   if (o.badge) s += `<g transform="${T(120, 1040, 1, -12)}"><circle r="74" fill="#d6312b" stroke="#fff" stroke-width="6"/>${txt(0, 20, "実話", { size: 56, fill: "#fff", font: "var(--display)", weight: 400 })}</g>`;
   return s;
 }
@@ -221,7 +222,7 @@ scene(22, 26, (lt, t) => {
 });
 
 // 6. 会社：定時で帰る
-scene(26, 36, (lt, t) => office(lt, t, { bowAt: 4.0, kohaiAt: 7.0 }));
+scene(26, 36, (lt, t) => office(lt, t, { bowAt: 4.0, kohaiAt: 7.0, bossTag: .4 }));
 
 // 7. コインランドリー
 scene(36, 44, (lt, t) => {
