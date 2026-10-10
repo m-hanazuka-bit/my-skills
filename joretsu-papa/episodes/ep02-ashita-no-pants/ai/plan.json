@@ -3,7 +3,7 @@
  "badge": "実話",
  "badge_until": 4.0,
  "sources": {
-  "note": "Higgsfield のジョブID。カット = minimax_hailuo（minimax-2.3-fast, 6秒）、場面の絵 = gpt_image_2_5（sunburst）、声 = text2speech_v2（elevenlabs）。パパ＝太郎、30代課長＝Evan、ナレーション（語り手）＝Gideon",
+  "note": "Higgsfield のジョブID。カット = minimax_hailuo（minimax-2.3-fast, 6秒）、場面の絵 = gpt_image_2_5（sunburst）、声 = text2speech_v2（elevenlabs）。パパ＝太郎、30代課長＝Evan、ナレーション（語り手）＝Emily",
   "clips": {
    "c0.mp4": "35880a85-c227-4d63-80cc-20b3f8abaa6f",
    "c1.mp4": "55f597e5-7590-4f63-9696-d43f3647c33f",
@@ -26,12 +26,12 @@
   ],
   "voice": {
    "hook.wav": "645dd013-b153-404e-ae81-2baaf35903fc",
-   "jiho.wav": "b5f6eace-1e33-404c-a3c0-f89dfd89730c",
-   "bath.wav": "3ff3641f-ae11-4ee7-803f-f92ef61c065d",
-   "order.wav": "6959e96c-8aae-4927-b86e-5356be8aa204",
-   "teiji.wav": "87da06b0-7d8f-458a-b1ac-2a84363d2cc5",
+   "jiho.wav": "ff12bd62-4fed-48ef-bc68-c09607b22d34",
+   "bath.wav": "b8c83142-7659-42d3-a9a6-3a54c76b4220",
+   "order.wav": "47409278-ddde-4e35-9409-7ee33df3a13d",
+   "teiji.wav": "c78048c9-5adb-4812-88a6-9db9a9012d11",
    "boss1.wav": "7f528739-673c-49df-b0ae-780bda6cc938",
-   "spin.wav": "1a9097f8-3128-4dfe-a45e-e6084179fca0",
+   "spin.wav": "9db186dc-af56-4375-a51b-61e785827c62",
    "boss2.wav": "f2a4fd86-6f37-4dff-8bb2-4bb2afcc7ca4",
    "reply.wav": "d97ddd0c-ccb5-4b9f-b57b-8eb70d6a6362",
    "end.wav": "3619e885-b2dc-4f86-b928-80ec3fe4a4c3"
