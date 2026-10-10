@@ -44,7 +44,7 @@ window.EPISODE = { w: 1080, h: 1920, fps: 30, duration: 50 };
 const LINES = [
   [0, 3, "パンツが、イカになっていた。"],
   [3, 9, "現在、午前4時50分。<br>家族はまだ、誰も起きていません。", "fixed"],
-  [9, 14, "タンスを開けると、<br>パンツが、ない。"],
+  [9, 14, "シャワーを浴びようとしたら、<br>替えのパンツが、ない。"],
   [14, 18.5, "雨が3日続いた我が家。<br>洗濯の順番は、序列のとおり。"],
   [18.5, 22, "パパのパンツは、<br>いつも最後です。"],
   [22, 26, "夜に洗われ、<br>真冬の庭で一晩。"],
@@ -135,19 +135,29 @@ scene(3, 9, (lt, t) => {
     ${popText(lt, 1.6, 900, 1060, "全員就寝中", { size: 44, fill: "#fff", stroke: "#20243b", sw: 8 })}`;
 });
 
-// 3. タンスが空
+// 3. 脱衣所：替えのパンツがない
 scene(9, 14, (lt, t) => {
-  const open = ease((lt - .3) / .6), shock = lt > 1.4;
-  const shake = shock && lt < 1.9 ? Math.sin(lt * 90) * 10 : 0;
-  let tansu = `<rect x="110" y="480" width="460" height="580" rx="16" fill="#b9875a" stroke="${INK}" stroke-width="6"/>`;
-  [600, 760, 920].forEach(y => tansu += `<rect x="140" y="${y}" width="400" height="130" rx="10" fill="#c99868" stroke="${INK}" stroke-width="5"/><rect x="310" y="${y + 55}" width="60" height="18" rx="9" fill="${INK}"/>`);
-  const dy = 140 * open;
-  tansu += `<g transform="translate(${-40 * open} ${-dy * .2})"><rect x="140" y="${470 - dy}" width="400" height="${130 + dy * .4}" rx="10" fill="#5a3d26" stroke="${INK}" stroke-width="5"/>
-    <rect x="130" y="${520}" width="420" height="120" rx="10" fill="#c99868" stroke="${INK}" stroke-width="5"/><rect x="310" y="572" width="60" height="18" rx="9" fill="${INK}"/>
-    ${open > .9 ? txt(340, 470 - dy + 80, "からっぽ", { size: 44, fill: "#e8d2b8" }) : ""}</g>`;
-  return `<rect width="1080" height="1180" fill="#2a2e4a"/><rect y="1060" width="1080" height="120" fill="#4a3f5a"/>
-    ${tansu}<g transform="translate(${shake} 0)">${C.place("papa", 800, 1120, 2.0, { outfit: "pajama", expr: shock ? "shock" : "normal", pose: shock ? "up" : "point" })}</g>
-    ${popText(lt, 1.4, 760, 260, "ガーン", { size: 150, font: "var(--display)", weight: 400, fill: "#fff", stroke: INK, sw: 16, rot: -6 })}`;
+  const shock = lt > 1.6;
+  const shake = shock && lt < 2.1 ? Math.sin(lt * 90) * 10 : 0;
+  // 家族のかご：妻と息子は洗濯物でいっぱい、パパのかごだけ空
+  const basket = (x, label, fill, stack) => `<g transform="translate(${x} 0)">
+    ${stack ? [0, 1, 2].map(k => `<rect x="-70" y="${300 - k * 34}" width="140" height="30" rx="8" fill="${fill}" stroke="${INK}" stroke-width="4"/>`).join("") : ""}
+    <path d="M-90 330 L90 330 L78 430 L-78 430 Z" fill="#d8b48a" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/>
+    ${[0, 1, 2].map(k => `<line x1="-80" y1="${356 + k * 24}" x2="80" y2="${356 + k * 24}" stroke="#b98f62" stroke-width="3"/>`).join("")}
+    <rect x="-46" y="360" width="92" height="44" rx="8" fill="#fff" stroke="${INK}" stroke-width="3"/>${txt(0, 393, label, { size: 30 })}</g>`;
+  const towel = `<path d="M68 156 Q100 172 132 156 L128 218 L112 218 L114 174 Q100 180 86 174 L88 218 L72 218 Z" fill="#ffffff" stroke="${INK}" stroke-width="4" stroke-linejoin="round"/><path d="M73 208 L87 208 M113 208 L127 208" stroke="#9cc8e8" stroke-width="5"/>`;
+  return `<rect width="1080" height="1180" fill="#e6edf2"/>
+    ${Array.from({ length: 9 }, (_, i) => `<rect x="${i * 120}" y="1060" width="120" height="120" fill="${i % 2 ? "#cfd8df" : "#dbe3e9"}"/>`).join("")}
+    <rect x="40" y="180" width="300" height="880" rx="10" fill="#c9d9e6" stroke="${INK}" stroke-width="6"/>
+    <rect x="70" y="210" width="240" height="560" rx="6" fill="#eef6fb" stroke="#9fb6c8" stroke-width="4"/>
+    ${[0, 1, 2, 3].map(k => `<path d="M${110 + k * 50} 260 q 10 30 0 60 q -10 30 0 60" fill="none" stroke="#bcd3e3" stroke-width="5" opacity=".8"/>`).join("")}
+    ${txt(190, 840, "浴室", { size: 40, fill: "#6b8296" })}<circle cx="300" cy="640" r="12" fill="${INK}"/>
+    <rect x="370" y="280" width="680" height="20" rx="6" fill="#b9875a" stroke="${INK}" stroke-width="4"/><path d="M420 300 L440 340 M1000 300 L980 340" stroke="#b9875a" stroke-width="10"/>
+    <g transform="translate(0 -150)">${basket(480, "妻", "#f4a3a3", true)}${basket(700, "息子", "#f7b65a", true)}${basket(920, "パパ", "", false)}</g>
+    ${lt > 1.6 ? `<ellipse cx="920" cy="230" rx="120" ry="40" fill="#fff59a" opacity=".35"/>` : ""}
+    <g transform="translate(450 1060)"><rect x="-90" y="-300" width="180" height="300" rx="16" fill="#f7f9fb" stroke="${INK}" stroke-width="6"/><circle cy="-140" r="62" fill="#c7d6e2" stroke="${INK}" stroke-width="6"/><circle cy="-140" r="40" fill="#a9bfd0"/><rect x="-60" y="-280" width="70" height="20" rx="6" fill="#cfd8df"/></g>
+    <g transform="translate(${shake} 0)">${C.place("papa", 780, 1120, 1.9, { outfit: "pajama", expr: shock ? "shock" : "normal", pose: shock ? "up" : "point", extra: towel })}</g>
+    ${popText(lt, 1.6, 300, 1000, "ガーン", { size: 130, font: "var(--display)", weight: 400, fill: "#fff", stroke: INK, sw: 16, rot: -6 })}`;
 });
 
 // 4. 洗濯の優先順位
