@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 // テロップ・タイトル帯・バッジを、動画に重ねる透過 PNG（1080x1920）として書き出す。
 // usage: NODE_PATH=$(npm root -g) node caption_png.mjs captions.json outdir
-// captions.json: { title, badge, lines: [{ id, text, who, style }] }  style: "" | "fixed"（決め台詞は黄色）
+// captions.json: { title, badge, hook, lines: [{ id, text, who, style }] }  style: "" | "fixed"（決め台詞は黄色）
+// hook：冒頭1〜3秒だけ出す大きな黄色い文字（<br> で3行まで）。スワイプされないよう、一番強い一言をここに置く
+// テロップと hook は、ショートの画面下の文字（タイトル・チャンネル名）に隠れない高さ（下端 1480px まで）に置く
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
@@ -20,7 +22,10 @@ const css = `
   .badge { position: absolute; left: 40px; top: 170px; width: 150px; height: 150px; border-radius: 50%;
     background: #d6312b; border: 6px solid #fff; transform: rotate(-12deg); display: flex; align-items: center; justify-content: center;
     font: 400 56px "Dela Gothic One"; color: #fff; box-shadow: 0 6px 0 rgba(0,0,0,.25); }
-  .cap { position: absolute; left: 40px; top: 1430px; width: 860px; min-height: 190px; box-sizing: border-box;
+  .hook { position: absolute; left: 0; width: 1080px; bottom: 440px; text-align: center;
+    font: 400 190px/1.05 "Dela Gothic One"; color: #ffd84a; letter-spacing: -4px;
+    -webkit-text-stroke: 22px #2d2a32; paint-order: stroke fill; text-shadow: 0 12px 0 #2d2a32; }
+  .cap { position: absolute; left: 40px; top: 1250px; width: 860px; min-height: 190px; box-sizing: border-box;
     padding: 30px 30px; background: #fff; border: 6px solid #2d2a32; border-radius: 32px; box-shadow: 0 10px 0 #2d2a32;
     font: 900 46px/1.4 "Zen Maru Gothic"; color: #2d2a32; text-align: center; display: flex; align-items: center; justify-content: center; }
   .cap.fixed { background: #ffd84a; }
@@ -40,6 +45,7 @@ async function shot(html, file) {
 }
 
 if (spec.title) await shot(`<div class="title">${spec.title}</div>`, "title.png");
+if (spec.hook) await shot(`<div class="hook">${spec.hook}</div>`, "hook.png");
 if (spec.badge) await shot(`<div class="badge">${spec.badge}</div>`, "badge.png");
 for (const l of spec.lines) await shot(`<div class="cap ${l.style || ""}"><span class="who">${l.who || "パパ"}</span><span>${l.text}</span></div>`, `cap_${l.id}.png`);
 await browser.close();

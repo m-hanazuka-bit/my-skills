@@ -10,6 +10,7 @@ usage:
 plan.json:
   {
     "title": "パパなので。", "badge": "実話", "badge_until": 4.0,
+    "hook": {"text": "パンツが<br>ないので<br>帰ります", "until": 2.5},
     "scenes": [
       {"clip": "c0.mp4", "clip_start": 0, "tail": 0.4,
        "lines": [{"id": "hook", "voice": "hook.wav", "gap": 0.2, "text": "…", "who": "パパ", "style": ""}]}
@@ -58,8 +59,12 @@ def main():
         t += sc.get("tail", 0.4)
         segs.append((i, sc, start, t - start))
     total = t
+    hook = plan.get("hook")
+    hook_until = hook.get("until", 2.5) if hook else 0.0
     for k, ln in enumerate(lines):
         ln["show_from"] = max(0.0, ln["start"] - 0.05) if k else 0.0
+        # 冒頭の大きな文字が出ている間は、ふつうのテロップを出さない
+        ln["show_from"] = max(ln["show_from"], hook_until)
         ln["show_to"] = lines[k + 1]["start"] - 0.05 if k + 1 < len(lines) else total
     json.dump({"total": total, "lines": lines}, open(os.path.join(a.work, "timeline.json"), "w"), ensure_ascii=False, indent=1)
     print(f"total {total:.2f}s, {len(lines)} lines, {len(segs)} scenes")
@@ -79,7 +84,7 @@ def main():
 
     # 3. テロップの PNG
     caps = os.path.join(a.work, "caps")
-    spec = {"title": plan.get("title"), "badge": plan.get("badge"),
+    spec = {"title": plan.get("title"), "badge": plan.get("badge"), "hook": hook["text"] if hook else None,
             "lines": [{"id": ln["id"], "text": ln["text"], "who": ln.get("who"), "style": ln.get("style", "")} for ln in lines]}
     json.dump(spec, open(os.path.join(a.work, "captions.json"), "w"), ensure_ascii=False)
     env = dict(os.environ)
@@ -93,7 +98,11 @@ def main():
         overlays.append((os.path.join(caps, "title.png"), 0, total))
     if plan.get("badge"):
         overlays.append((os.path.join(caps, "badge.png"), 0, plan.get("badge_until", 4.0)))
+    if hook:
+        overlays.append((os.path.join(caps, "hook.png"), 0, hook_until))
     for ln in lines:
+        if ln["show_from"] >= ln["show_to"]:
+            continue
         overlays.append((os.path.join(caps, f"cap_{ln['id']}.png"), ln["show_from"], ln["show_to"]))
     for png, _, _ in overlays:
         inputs += ["-loop", "1", "-i", png]
