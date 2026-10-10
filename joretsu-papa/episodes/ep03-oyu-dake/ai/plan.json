@@ -2,6 +2,10 @@
  "title": "パパなので。",
  "badge": "実話",
  "badge_until": 4.0,
+ "hook": {
+  "text": "得意料理は<br>お湯です",
+  "until": 2.5
+ },
  "sources": {
   "note": "Higgsfield のジョブID。カット = minimax_hailuo（minimax-2.3-fast, 6秒）、場面の絵 = gpt_image_2_5（sunburst）、声 = text2speech_v2（elevenlabs）。パパ＝太郎、30代課長＝Evan、ナレーション（語り手）＝Emily。締めの声は ep02 のものを使い回し",
   "clips": {
@@ -46,7 +50,7 @@
     {
      "id": "hook",
      "voice": "hook.wav",
-     "gap": 0.2,
+     "gap": 0.0,
      "text": "パパの得意料理は、<br>お湯です。",
      "who": "ナレーション"
     }
