@@ -22,7 +22,7 @@ const css = `
     font: 400 56px "Dela Gothic One"; color: #fff; box-shadow: 0 6px 0 rgba(0,0,0,.25); }
   .cap { position: absolute; left: 40px; top: 1430px; width: 860px; min-height: 190px; box-sizing: border-box;
     padding: 30px 30px; background: #fff; border: 6px solid #2d2a32; border-radius: 32px; box-shadow: 0 10px 0 #2d2a32;
-    font: 900 50px/1.4 "Zen Maru Gothic"; color: #2d2a32; text-align: center; display: flex; align-items: center; justify-content: center; }
+    font: 900 46px/1.4 "Zen Maru Gothic"; color: #2d2a32; text-align: center; display: flex; align-items: center; justify-content: center; }
   .cap.fixed { background: #ffd84a; }
   .who { position: absolute; left: 28px; top: -28px; background: #2d2a32; color: #fff; font: 700 28px "Zen Maru Gothic"; padding: 4px 18px; border-radius: 20px; }
 `;
