@@ -1,0 +1,53 @@
+{
+  "title": "家庭内序列5位パパ",
+  "badge": "実話",
+  "badge_until": 4.0,
+  "sources": {
+    "note": "Higgsfield のジョブID。カット = minimax_hailuo（minimax-2.3-fast, 6秒）、場面の絵 = gpt_image_2_5（sunburst）、声 = text2speech_v2（elevenlabs）。パパ＝太郎、年下上司＝Ken",
+    "clips": {
+      "c0.mp4": "35880a85-c227-4d63-80cc-20b3f8abaa6f",
+      "c1.mp4": "55f597e5-7590-4f63-9696-d43f3647c33f",
+      "c2.mp4": "ce8b32c1-7718-44dd-b358-ffde7e9e202c",
+      "c3.mp4": "da7df970-434f-45e6-9a3c-e3890d2b939a",
+      "c4.mp4": "a1433c01-7fbd-43d4-8500-6dd8f3561541",
+      "c5.mp4": "c077a9f3-8a5c-4701-9f2d-6e4996ff5a72",
+      "c6.mp4": "8a9b0a42-09d9-406d-9606-11a1b7adea27",
+      "c7.mp4": "4346b900-92a5-4e5b-8dc4-f74c03a67a8c"
+    },
+    "keyframes": ["1c1200ef-70fc-401d-b6e6-4f12dd935f42", "aaba225b-db13-4064-8b9f-e883cbd8887d", "0642f881-88a4-4e3b-ae12-3a609cfd67ef", "e8bc367e-0992-4bb7-b154-a588dd383c2c", "c251908c-ab7b-4a8d-a82c-dd59bf159383", "893e455d-1847-45af-9bab-9d6aaf6f4afc", "aeb119ee-50e3-408e-b0e6-3fa50507dfa3", "52bd05ec-34be-4a84-9d4d-fdbcd40b4337"],
+    "voice": {
+      "hook.wav": "eb291e37-6609-4244-ae21-73449027ff8a",
+      "jiho.wav": "7fa6584b-0bb0-48da-acbc-30f813dc60ae",
+      "bath.wav": "cde4ee06-e4d4-4ee1-a29d-f6f3cb457959",
+      "order.wav": "ce772535-0a55-442c-9363-91adddbdf50c",
+      "teiji.wav": "e3f6d48e-c556-4268-a8e6-3fe2f8d743a3",
+      "boss1.wav": "7557aa6a-decd-4463-b7c9-daff29772f90",
+      "spin.wav": "cc2f8bac-3a58-4c95-b0a6-a6388d621823",
+      "boss2.wav": "50ce72cf-47c1-4055-bb61-59788e758f5d",
+      "reply.wav": "d97ddd0c-ccb5-4b9f-b57b-8eb70d6a6362",
+      "end.wav": "3619e885-b2dc-4f86-b928-80ec3fe4a4c3"
+    }
+  },
+  "scenes": [
+    {"clip": "c0.mp4", "clip_start": 0, "tail": 0.4, "lines": [
+      {"id": "hook", "voice": "hook.wav", "gap": 0.2, "text": "「明日履くパンツがないので、<br>帰ります。」", "who": "パパ"}]},
+    {"clip": "c1.mp4", "clip_start": 0, "tail": 0.3, "lines": [
+      {"id": "jiho", "voice": "jiho.wav", "gap": 0.1, "text": "現在、午後11時30分。<br>家族はもう、誰も起きていません。", "who": "パパ", "style": "fixed"}]},
+    {"clip": "c2.mp4", "clip_start": 0, "tail": 0.4, "lines": [
+      {"id": "bath", "voice": "bath.wav", "gap": 0.2, "text": "風呂に入ろうとしたら…<br>パンツが、最後の1枚。", "who": "パパ"}]},
+    {"clip": "c3.mp4", "clip_start": 0, "tail": 0.4, "lines": [
+      {"id": "order", "voice": "order.wav", "gap": 0.2, "text": "雨が3日続くと、<br>洗濯の順番は、いつもパパが最後。", "who": "パパ"}]},
+    {"clip": "c0.mp4", "clip_start": 0.3, "tail": 0.3, "lines": [
+      {"id": "teiji", "voice": "teiji.wav", "gap": 0.2, "text": "次の日の定時。<br>年下の上司に、こう言った。", "who": "パパ"},
+      {"id": "say", "voice": "hook.wav", "gap": 0.3, "text": "「明日履くパンツがないので、<br>帰ります。」", "who": "パパ"}]},
+    {"clip": "c4.mp4", "clip_start": 0.5, "tail": 0.5, "lines": [
+      {"id": "boss1", "voice": "boss1.wav", "gap": 0.2, "text": "…いつも、大変ですね。", "who": "年下上司"}]},
+    {"clip": "c5.mp4", "clip_start": 0, "tail": 0.5, "lines": [
+      {"id": "spin", "voice": "spin.wav", "gap": 0.4, "text": "大きな乾燥機の中で、<br>パパのパンツだけが回っている。", "who": "パパ"}]},
+    {"clip": "c6.mp4", "clip_start": 0, "tail": 0.8, "lines": [
+      {"id": "boss2", "voice": "boss2.wav", "gap": 0.3, "text": "先輩、ちゃんと<br>きれいなパンツ履いてきました？", "who": "年下上司"},
+      {"id": "reply", "voice": "reply.wav", "gap": 0.4, "text": "…はい。", "who": "パパ"}]},
+    {"clip": "c7.mp4", "clip_start": 0, "tail": 1.0, "lines": [
+      {"id": "end", "voice": "end.wav", "gap": 0.5, "text": "…まあ、いいんです。<br>パパなので。", "who": "パパ", "style": "fixed"}]}
+  ]
+}
