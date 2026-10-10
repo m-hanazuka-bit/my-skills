@@ -37,7 +37,7 @@
 <script src="../../assets/characters.js"></script>
 <script>
 const C = window.Chars, INK = C.INK;
-window.EPISODE = { w: 1080, h: 1920, fps: 30, duration: 60 };
+window.EPISODE = { w: 1080, h: 1920, fps: 30, duration: 50 };
 
 // ---------- 台本（ナレーション = テロップ） ----------
 // fixed: 決め台詞（黄色いテロップ）／5番目: 話している人（省略時はパパ）
@@ -53,10 +53,7 @@ const LINES = [
   [34, 38, "そのまま、片道1時間半の<br>高速通勤へ。"],
   [38, 41.5, "会社に着く頃には、<br>カラッと乾いた。"],
   [41.5, 45, "先輩、なんか<br>イカ焼きの匂いしません？", "", "後輩"],
-  [45, 49, "…まあ、いいんです。<br>パパなので。", "fixed"],
-  [49, 53.5, "本日の家庭内序列。<br>5位、パパのパンツ。", "fixed"],
-  [53.5, 57, "6位、パパ。<br>前日比、1ランクダウン。", "fixed"],
-  [57, 60, "理由：パンツの方が<br>いい席に座っていたため。", "fixed"],
+  [45, 50, "…まあ、いいんです。<br>パパなので。", "fixed"],
 ];
 
 // ---------- 小道具 ----------
@@ -234,35 +231,14 @@ scene(38, 45, (lt, t) => {
   return s;
 });
 
-// 8. パパなので（毎回同じ演出）
-scene(45, 49, (lt, t) => `<rect width="1080" height="1180" fill="#3b4058"/><ellipse cx="540" cy="760" rx="420" ry="520" fill="url(#spot)"/>
+// 8. パパなので（毎回同じ締め）
+scene(45, 50, (lt, t) => `<rect width="1080" height="1180" fill="#3b4058"/><ellipse cx="540" cy="760" rx="420" ry="520" fill="url(#spot)"/>
   <ellipse cx="540" cy="1090" rx="230" ry="40" fill="#2a2e40"/>
   ${C.place("papa", 540, 1090, 2.1, { expr: lt > 2.2 ? "cry" : "sad", pose: "droop" })}
   <g opacity="${cl(lt / .4)}">${txt(540, 170, "…まあ、いいんです。", { size: 62, fill: "#fff" })}</g>
   ${popText(lt, 1.4, 540, 330, "パパなので。", { size: 120, font: "var(--display)", weight: 400, fill: "#ffd84a", stroke: INK, sw: 16 })}
-  <path d="M0 0 q 20 -14 40 0 q -20 14 -40 0 Z" fill="#c98a4a" transform="translate(${300 + lt * 60} ${420 + lt * 140}) rotate(${lt * 90})"/>`);
-
-// 9. 本日の家庭内序列（毎回同じ演出。ここがオチ）
-scene(49, 60, (lt, t) => {
-  const order = [["tsuma", "妻"], ["musuko", "息子"], ["ane", "義姉"], ["gifu", "義父"], ["pants", "パパのパンツ"], ["papa", "パパ"]];
-  const at = [.3, .6, .9, 1.2, 2.0, 4.5];
-  let s = `<rect width="1080" height="1180" fill="url(#gold)"/>${stars(t)}${txt(540, 120, "本日の家庭内序列", { size: 84, font: "var(--display)", weight: 400, fill: "#ffd84a", stroke: INK, sw: 12 })}`;
-  order.forEach(([id, name], i) => {
-    if (lt < at[i]) return;
-    const k = ease((lt - at[i]) / .3), y = 250 + i * 138, last = i === 5, pan = i === 4;
-    const shake = (pan && lt < 2.4) || (last && lt < 4.9) ? Math.sin(lt * 80) * 8 : 0;
-    s += `<g transform="translate(${(1 - k) * 700 + shake} 0)" opacity="${k}"><rect x="90" y="${y - 58}" width="900" height="116" rx="58" fill="${last ? "#d6312b" : pan ? "#fff2b0" : "#fffdf6"}" stroke="${INK}" stroke-width="6"/>
-      ${txt(200, y + 24, (i + 1) + "位", { size: 64, font: "var(--display)", weight: 400, fill: last ? "#fff" : (i === 0 ? "#c9932a" : INK) })}
-      ${pan ? pants(375, y - 28, .5, { hanger: false }) : C.placeHead(id, 375, y, .45, last ? { expr: "cry" } : {})}
-      ${txt(460, y + 20, name, { size: 56, anchor: "start", fill: last ? "#fff" : INK })}
-      ${pan && lt > 7.8 ? `<g transform="${T(915, y - 44, pop(lt, 7.8), 6)}"><rect x="-90" y="-30" width="180" height="60" rx="30" fill="#ff7a3c" stroke="${INK}" stroke-width="4"/>${txt(0, 13, "暖房席", { size: 34, fill: "#fff" })}</g>` : ""}</g>`;
-  });
-  s += stamp(lt, 5.4, 540, 1100, "前日比 1ランクダウン", { w: 660, size: 54, rot: -4 });
-  // ループ用：最後に冒頭のカットへ戻る
-  const back2hook = cl((lt - 10.65) / .35);
-  if (back2hook > 0) s += `<g opacity="${back2hook}">${hook(0, t)}</g>`;
-  return s;
-});
+  <path d="M0 0 q 20 -14 40 0 q -20 14 -40 0 Z" fill="#c98a4a" transform="translate(${300 + lt * 60} ${420 + lt * 140}) rotate(${lt * 90})"/>
+  ${lt > 4.65 ? `<g opacity="${cl((lt - 4.65) / .35)}">${hook(0, t)}</g>` : ""}`);
 
 // ---------- 描画 ----------
 const stage = document.getElementById("stage");
