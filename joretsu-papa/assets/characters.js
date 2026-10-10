@@ -12,19 +12,21 @@
     musuko: { name: "息子",   rank: 2, hair: "#2a2320", skin: SKIN, scale: 0.8 },
     ane:    { name: "義姉",   rank: 3, hair: "#3b2a2e", glasses: "#d0306b", skin: SKIN },
     gifu:   { name: "義父",   rank: 4, hair: "#f4f4f2", skin: "#f8d4b6" },
+    kohai:  { name: "後輩",   rank: 0, hair: "#8a5a34", skin: SKIN },  // 会社のモブ
   };
 
   // 服（outfit）ごとの色
   const OUTFITS = {
     suit:    { top: "#3d4f7a", bottom: "#2f3d60", shoe: "#2a2a2a" },
+    suitGray:{ top: "#8e96a3", bottom: "#6f7784", shoe: "#5a3a2a" },
     pajama:  { top: "#9cc8e8", bottom: "#86b6da", shoe: "#d9d9d9", stripe: "#ffffff" },
     apron:   { top: "#e86a5a", bottom: "#5a6b8c", shoe: "#8a5a44", apron: "#fff8ef" },
     tshirt:  { top: "#f39a2b", bottom: "#3f7ec9", shoe: "#e04b3c" },
     oshi:    { top: "#a678dd", bottom: "#4a4a62", shoe: "#ffffff" },
     cardigan:{ top: "#c9a86a", bottom: "#6d5a4a", shoe: "#4a3a30", inner: "#f2ece0" },
   };
-  const DEFAULT_OUTFIT = { papa: "suit", tsuma: "apron", musuko: "tshirt", ane: "oshi", gifu: "cardigan" };
-  const DEFAULT_EXPR = { papa: "tired", tsuma: "strong", musuko: "smug", ane: "normal", gifu: "gentle" };
+  const DEFAULT_OUTFIT = { papa: "suit", tsuma: "apron", musuko: "tshirt", ane: "oshi", gifu: "cardigan", kohai: "suitGray" };
+  const DEFAULT_EXPR = { papa: "tired", tsuma: "strong", musuko: "smug", ane: "normal", gifu: "gentle", kohai: "normal" };
 
   // ---- 部品 ----
   function legs(o, short) {
@@ -55,7 +57,7 @@
 
   function torso(id, o) {
     let s = `<path d="M62 176 Q62 154 84 151 L116 151 Q138 154 138 176 L141 252 Q100 260 59 252 Z" fill="${o.top}" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/>`;
-    if (o === OUTFITS.suit) {
+    if (o === OUTFITS.suit || o === OUTFITS.suitGray) {
       s += `<path d="M86 152 L100 186 L114 152 Z" fill="#fff" stroke="${INK}" stroke-width="3"/>
             <path d="M100 160 L95 192 L100 202 L105 192 Z" fill="#c0392b" stroke="${INK}" stroke-width="3"/>
             <path d="M84 152 L100 186 L92 200 M116 152 L100 186 L108 200" fill="none" stroke="${INK}" stroke-width="3"/>`;
@@ -95,6 +97,8 @@
         return `<path d="M42 96 L36 62 L56 70 L58 40 L78 58 L92 30 L104 56 L124 32 L130 60 L152 46 L148 72 L166 70 L158 98 Q140 74 100 72 Q60 74 42 96 Z" fill="${c.hair}" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/>`;
       case "ane":
         return `<path d="M40 110 Q38 40 100 38 Q162 40 160 110 Q150 84 124 80 Q118 92 100 90 Q84 92 78 80 Q50 84 40 110 Z" fill="${c.hair}" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/>`;
+      case "kohai":
+        return `<path d="M40 100 Q36 36 104 36 Q164 40 160 100 Q150 70 120 64 Q110 82 70 72 Q50 78 40 100 Z" fill="${c.hair}" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/>`;
       case "gifu":
         return `<path d="M42 110 Q36 66 54 56 Q62 74 58 104 Z M158 110 Q164 66 146 56 Q138 74 142 104 Z" fill="${c.hair}" stroke="${INK}" stroke-width="4" stroke-linejoin="round"/>
                 <path d="M58 62 Q80 36 112 40 Q144 44 148 64 Q120 50 90 56 Q70 60 58 62 Z" fill="${c.hair}" stroke="${INK}" stroke-width="4" stroke-linejoin="round"/>`;
