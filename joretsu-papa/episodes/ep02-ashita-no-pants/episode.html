@@ -26,6 +26,7 @@
     <radialGradient id="lamp" cx=".3" cy=".7" r=".8"><stop offset="0" stop-color="#ffe3b0"/><stop offset="1" stop-color="#b98a5e"/></radialGradient>
     <clipPath id="stageClip"><rect x="0" y="0" width="1080" height="1180"/></clipPath>
     <linearGradient id="dusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5aa8"/><stop offset=".6" stop-color="#f08a6a"/><stop offset="1" stop-color="#ffc98a"/></linearGradient>
+    <linearGradient id="morningSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7cc0f5"/><stop offset="1" stop-color="#e3f4ff"/></linearGradient>
     <clipPath id="win"><rect x="84" y="94" width="912" height="332"/></clipPath>
     <clipPath id="drum"><circle cx="0" cy="0" r="100"/></clipPath>
     <clipPath id="bubbleClip"><circle cx="0" cy="0" r="220"/></clipPath>
@@ -40,7 +41,7 @@
 <script src="../../assets/characters.js"></script>
 <script>
 const C = window.Chars, INK = C.INK;
-window.EPISODE = { w: 1080, h: 1920, fps: 30, duration: 53 };
+window.EPISODE = { w: 1080, h: 1920, fps: 30, duration: 57 };
 
 // ---------- 台本（ナレーション = テロップ） ----------
 // fixed: 決め台詞（黄色いテロップ）／5番目: 話している人（省略時はパパ）
@@ -57,7 +58,8 @@ const LINES = [
   [36, 40, "残業を断り、会社近くの<br>コインランドリーへ。"],
   [40, 44, "大きな乾燥機の中で、<br>パパのパンツだけが回っている。"],
   [44, 48, "それから片道1時間半かけて、<br>家に帰った。"],
-  [48, 53, "…まあ、いいんです。<br>パパなので。", "fixed"],
+  [48, 52, "先輩、ちゃんと<br>きれいなパンツ履いてきました？", "", "後輩"],
+  [52, 57, "…まあ、いいんです。<br>パパなので。", "fixed"],
 ];
 
 // ---------- 小道具 ----------
@@ -258,8 +260,33 @@ scene(44, 48, (lt, t) => {
     <g transform="translate(860 1110)"><rect x="-150" y="-44" width="300" height="84" rx="12" fill="#1f7a4d" stroke="#fff" stroke-width="6"/>${txt(0, 14, "片道1時間半", { size: 42, fill: "#fff" })}</g>`;
 });
 
-// 9. パパなので（毎回同じ締め）
-scene(48, 53, (lt, t) => `<rect width="1080" height="1180" fill="#3b4058"/><ellipse cx="540" cy="760" rx="420" ry="520" fill="url(#spot)"/>
+// 9. 次の日の朝：後輩のひとこと（オチ）
+scene(48, 52, (lt, t) => {
+  const walk = ease(lt / .5);
+  const bag = `<rect x="132" y="236" width="58" height="44" rx="8" fill="#5a4636" stroke="${INK}" stroke-width="4"/><path d="M146 236 Q161 214 176 236" fill="none" stroke="${INK}" stroke-width="4"/>`;
+  const reply = lt > 2.4;
+  let s = `<rect width="1080" height="1180" fill="#ece6da"/>
+    <rect x="600" y="110" width="420" height="320" rx="8" fill="url(#morningSky)" stroke="${INK}" stroke-width="8"/><circle cx="920" cy="190" r="44" fill="#fff6c9"/><line x1="810" y1="110" x2="810" y2="430" stroke="${INK}" stroke-width="6"/>
+    <g transform="translate(220 230)"><circle r="96" fill="#fff" stroke="${INK}" stroke-width="8"/>
+      ${Array.from({ length: 12 }, (_, i) => `<line x1="0" y1="-80" x2="0" y2="-68" stroke="${INK}" stroke-width="5" transform="rotate(${i * 30})"/>`).join("")}
+      <line x1="0" y1="0" x2="0" y2="-46" stroke="${INK}" stroke-width="9" stroke-linecap="round" transform="rotate(255)"/>
+      <line x1="0" y1="0" x2="0" y2="-70" stroke="${INK}" stroke-width="6" stroke-linecap="round" transform="rotate(180)"/></g>
+    ${popText(lt, .05, 420, 250, "次の日の朝", { size: 52, fill: "#2f6fb5", stroke: "#fff", sw: 10, anchor: "start" })}
+    <rect x="0" y="800" width="1080" height="380" fill="#d9d2c4"/>
+    ${[160, 920].map(x => `<rect x="${x - 120}" y="780" width="240" height="40" fill="#b9a68a" stroke="${INK}" stroke-width="5"/><rect x="${x - 70}" y="640" width="140" height="110" rx="8" fill="#3a4258" stroke="${INK}" stroke-width="5"/><rect x="${x - 14}" y="750" width="28" height="30" fill="#3a4258"/>`).join("")}
+    ${C.place("kohai", lerp(-120, 300, walk), 1130, 1.75, { expr: "normal", pose: lt > .6 ? "point" : "down" })}
+    ${C.place("papa", 700, 1130, 1.85, { expr: reply ? "happy" : "tired", extra: bag })}`;
+  if (lt > .6) s += `<g transform="${T(540, 520, pop(lt, .6))}"><rect x="-480" y="-110" width="960" height="220" rx="40" fill="#fff" stroke="${INK}" stroke-width="7"/>
+    <path d="M-280 106 L-300 190 L-210 106 Z" fill="#fff" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/><rect x="-292" y="94" width="88" height="20" fill="#fff"/>
+    ${txt(0, -14, "先輩、ちゃんと", { size: 60 })}${txt(0, 70, "きれいなパンツ履いてきました？", { size: 60 })}</g>`;
+  if (reply) s += `<g transform="${T(900, 700, pop(lt, 2.4))}"><rect x="-130" y="-56" width="260" height="112" rx="30" fill="#fff" stroke="${INK}" stroke-width="6"/>
+    <path d="M-60 52 L-110 110 L-20 52 Z" fill="#fff" stroke="${INK}" stroke-width="6" stroke-linejoin="round"/><rect x="-66" y="44" width="52" height="16" fill="#fff"/>${txt(0, 18, "…はい。", { size: 54 })}</g>`;
+  if (lt > 2.7) s += [[600, 1000], [790, 960], [700, 1040]].map(([x, y], i) => `<path d="M0 -22 L6 -6 L22 0 L6 6 L0 22 L-6 6 L-22 0 L-6 -6 Z" fill="#ffd84a" stroke="${INK}" stroke-width="3" transform="translate(${x} ${y}) scale(${pop(lt, 2.7 + i * .12) * (1 + .15 * Math.sin(t * 8 + i))})"/>`).join("");
+  return s;
+});
+
+// 10. パパなので（毎回同じ締め）
+scene(52, 57, (lt, t) => `<rect width="1080" height="1180" fill="#3b4058"/><ellipse cx="540" cy="760" rx="420" ry="520" fill="url(#spot)"/>
   <ellipse cx="540" cy="1090" rx="230" ry="40" fill="#2a2e40"/>
   ${C.place("papa", 540, 1090, 2.1, { expr: lt > 2.2 ? "cry" : "sad", pose: "droop" })}
   <g opacity="${cl(lt / .4)}">${txt(540, 170, "…まあ、いいんです。", { size: 62, fill: "#fff" })}</g>
