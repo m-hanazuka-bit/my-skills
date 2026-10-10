@@ -1,0 +1,60 @@
+{
+ "title": "パパなので。",
+ "badge": "実話",
+ "badge_until": 4.0,
+ "sources": {
+  "note": "Higgsfield のジョブID。カット = minimax_hailuo（minimax-2.3-fast, 6秒）、場面の絵 = gpt_image_2_5（sunburst）、声 = text2speech_v2（elevenlabs）。パパ＝太郎、30代課長＝Evan、ナレーション（語り手）＝Emily。締めの声は ep02 のものを使い回し",
+  "clips": {
+   "c0.mp4": "d4ca37cb-1a06-41f9-a128-e919ae60ad21",
+   "c1.mp4": "4ef9a9e3-120d-4c5f-8b39-30cf0d1a11a7",
+   "c2.mp4": "5e7b6622-da9e-4060-a08c-340e6b3a7907",
+   "c3.mp4": "1f945689-45df-494a-9c2f-23dac6b0bb8c",
+   "c4.mp4": "3a397aa2-b144-4766-96d8-35a432e21460",
+   "c5.mp4": "4457ae87-c09a-4f21-91a7-765ef7c41026",
+   "c6.mp4": "2f786c0b-dc4c-4cdf-898d-4349e4e49efe",
+   "c7.mp4": "b83f705f-5ea6-4fca-81e3-276120b0f624"
+  },
+  "keyframes": [
+   "56bb7f89-b9d9-4048-9963-5f1c974f9c26",
+   "1c6e030a-784b-49e2-923b-bde6b0eee376",
+   "3e546b7c-97e8-4418-967d-3dfca489e438",
+   "d89089ce-85c6-4e7a-a75e-e37c29b39bbb",
+   "8b2eb814-d4dd-423b-b7bb-711be6f0ff9a",
+   "30d78341-9043-473e-adbf-4c2c1beff2a4",
+   "4e3245bb-d228-43c4-9808-c42b67b08b82",
+   "f938a9d3-892f-4c48-87a3-7a31222b5e54"
+  ],
+  "voice": {
+   "hook.mp3": "c8504931-68b0-4c82-a936-14e01f68c2e2",
+   "jiho.mp3": "be894a24-c214-40fe-ad2e-fbc6b4757867",
+   "past.mp3": "e037df49-4ed2-450e-aaa2-750f16a39e89",
+   "clean.mp3": "ff5b60e8-fb24-4f16-adfc-b93a3bdd5be0",
+   "cover.mp3": "7fef84b2-46fe-4336-bffb-d6898c9ae0b9",
+   "nextday.mp3": "f0e9bfaf-fac0-4df7-9203-c54354805273",
+   "boss1.mp3": "b517646a-8aae-49f8-ad38-9592c2dcb225",
+   "boss2.mp3": "e986edfc-c474-466e-ac2b-210012180b7c",
+   "reply.mp3": "ecbd8476-ca13-4858-986c-036feeded722",
+   "end.wav": "3619e885-b2dc-4f86-b928-80ec3fe4a4c3"
+  }
+ },
+ "scenes": [
+  {"clip": "c0.mp4", "clip_start": 0, "tail": 0.4, "lines": [
+   {"id": "hook", "voice": "hook.mp3", "gap": 0.2, "text": "パパの得意料理は、<br>お湯です。", "who": "ナレーション"}]},
+  {"clip": "c1.mp4", "clip_start": 0, "tail": 0.3, "lines": [
+   {"id": "jiho", "voice": "jiho.mp3", "gap": 0.1, "text": "現在、午後11時。<br>家族はもう、誰も起きていません。", "who": "ナレーション", "style": "fixed"}]},
+  {"clip": "c2.mp4", "clip_start": 0, "tail": 0.4, "lines": [
+   {"id": "past", "voice": "past.mp3", "gap": 0.2, "text": "1年前、キッチンをリフォームした。<br>最初は、炒め物も、焼き魚も作っていた。", "who": "ナレーション"}]},
+  {"clip": "c3.mp4", "clip_start": 0, "tail": 0.4, "lines": [
+   {"id": "clean", "voice": "clean.mp3", "gap": 0.2, "text": "汚すたびに、掃除。少しでも汚れが<br>残っていると、怒られる。気づけば、料理禁止。", "who": "ナレーション"}]},
+  {"clip": "c4.mp4", "clip_start": 0, "tail": 0.5, "lines": [
+   {"id": "cover", "voice": "cover.mp3", "gap": 0.2, "text": "グリルの排気口には、ほこりよけのカバー。<br>コンロは3口あるのに、2口にもカバー。<br>使えるのは、1口だけ。", "who": "ナレーション"}]},
+  {"clip": "c5.mp4", "clip_start": 0, "tail": 0.4, "lines": [
+   {"id": "nextday", "voice": "nextday.mp3", "gap": 0.3, "text": "次の日。40代係長は、<br>30代課長に、この話をした。", "who": "ナレーション"},
+   {"id": "boss1", "voice": "boss1.mp3", "gap": 0.3, "text": "先輩、リフォームしたのに<br>使えないんですか…大変ですね。", "who": "30代課長"}]},
+  {"clip": "c6.mp4", "clip_start": 0, "tail": 0.8, "lines": [
+   {"id": "boss2", "voice": "boss2.mp3", "gap": 0.3, "text": "うちも先月リフォームして、<br>毎晩、僕が作ってます。", "who": "30代課長"},
+   {"id": "reply", "voice": "reply.mp3", "gap": 0.5, "text": "…お湯は、沸かせます。", "who": "パパ"}]},
+  {"clip": "c7.mp4", "clip_start": 0, "tail": 1.0, "lines": [
+   {"id": "end", "voice": "end.wav", "gap": 0.5, "text": "…まあ、いいんです。<br>パパなので。", "who": "パパ", "style": "fixed"}]}
+ ]
+}
