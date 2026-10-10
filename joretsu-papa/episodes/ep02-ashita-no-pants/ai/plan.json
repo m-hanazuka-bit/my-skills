@@ -3,7 +3,7 @@
   "badge": "実話",
   "badge_until": 4.0,
   "sources": {
-    "note": "Higgsfield のジョブID。カット = minimax_hailuo（minimax-2.3-fast, 6秒）、場面の絵 = gpt_image_2_5（sunburst）、声 = text2speech_v2（elevenlabs）。パパ＝太郎、年下上司＝Ken",
+    "note": "Higgsfield のジョブID。カット = minimax_hailuo（minimax-2.3-fast, 6秒）、場面の絵 = gpt_image_2_5（sunburst）、声 = text2speech_v2（elevenlabs）。パパ＝太郎、30代課長（年下の上司）＝Ken",
     "clips": {
       "c0.mp4": "35880a85-c227-4d63-80cc-20b3f8abaa6f",
       "c1.mp4": "55f597e5-7590-4f63-9696-d43f3647c33f",
@@ -20,7 +20,7 @@
       "jiho.wav": "7fa6584b-0bb0-48da-acbc-30f813dc60ae",
       "bath.wav": "cde4ee06-e4d4-4ee1-a29d-f6f3cb457959",
       "order.wav": "ce772535-0a55-442c-9363-91adddbdf50c",
-      "teiji.wav": "e3f6d48e-c556-4268-a8e6-3fe2f8d743a3",
+      "teiji.wav": "15bb7e44-1e06-4550-a983-a23541bb0a17",
       "boss1.wav": "7557aa6a-decd-4463-b7c9-daff29772f90",
       "spin.wav": "cc2f8bac-3a58-4c95-b0a6-a6388d621823",
       "boss2.wav": "50ce72cf-47c1-4055-bb61-59788e758f5d",
@@ -38,14 +38,14 @@
     {"clip": "c3.mp4", "clip_start": 0, "tail": 0.4, "lines": [
       {"id": "order", "voice": "order.wav", "gap": 0.2, "text": "雨が3日続くと、<br>洗濯の順番は、いつもパパが最後。", "who": "パパ"}]},
     {"clip": "c0.mp4", "clip_start": 0.3, "tail": 0.3, "lines": [
-      {"id": "teiji", "voice": "teiji.wav", "gap": 0.2, "text": "次の日の定時。<br>年下の上司に、こう言った。", "who": "パパ"},
+      {"id": "teiji", "voice": "teiji.wav", "gap": 0.2, "text": "次の日の定時。40代係長は、<br>30代課長に、こう言った。", "who": "パパ"},
       {"id": "say", "voice": "hook.wav", "gap": 0.3, "text": "「明日履くパンツがないので、<br>帰ります。」", "who": "パパ"}]},
     {"clip": "c4.mp4", "clip_start": 0.5, "tail": 0.5, "lines": [
-      {"id": "boss1", "voice": "boss1.wav", "gap": 0.2, "text": "…いつも、大変ですね。", "who": "年下上司"}]},
+      {"id": "boss1", "voice": "boss1.wav", "gap": 0.2, "text": "…いつも、大変ですね。", "who": "30代課長"}]},
     {"clip": "c5.mp4", "clip_start": 0, "tail": 0.5, "lines": [
       {"id": "spin", "voice": "spin.wav", "gap": 0.4, "text": "大きな乾燥機の中で、<br>パパのパンツだけが回っている。", "who": "パパ"}]},
     {"clip": "c6.mp4", "clip_start": 0, "tail": 0.8, "lines": [
-      {"id": "boss2", "voice": "boss2.wav", "gap": 0.3, "text": "先輩、ちゃんと<br>きれいなパンツ履いてきました？", "who": "年下上司"},
+      {"id": "boss2", "voice": "boss2.wav", "gap": 0.3, "text": "先輩、ちゃんと<br>きれいなパンツ履いてきました？", "who": "30代課長"},
       {"id": "reply", "voice": "reply.wav", "gap": 0.4, "text": "…はい。", "who": "パパ"}]},
     {"clip": "c7.mp4", "clip_start": 0, "tail": 1.0, "lines": [
       {"id": "end", "voice": "end.wav", "gap": 0.5, "text": "…まあ、いいんです。<br>パパなので。", "who": "パパ", "style": "fixed"}]}
