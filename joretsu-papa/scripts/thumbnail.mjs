@@ -18,7 +18,7 @@ body{background:url(${bg});position:relative;overflow:hidden}
 .shade{position:absolute;left:0;right:0;bottom:0;height:900px;background:linear-gradient(to bottom,rgba(20,18,24,0),rgba(20,18,24,.55) 35%,rgba(20,18,24,.8))}
 .band{position:absolute;left:0;top:0;width:1080px;height:128px;background:rgba(45,42,50,.82);display:flex;align-items:center;padding-left:44px;box-sizing:border-box;font:400 54px "Dela Gothic One";color:#fff;letter-spacing:2px}
 .badge{position:absolute;left:40px;top:170px;width:170px;height:170px;border-radius:50%;background:#d6312b;border:7px solid #fff;transform:rotate(-12deg);display:flex;align-items:center;justify-content:center;font:400 64px "Dela Gothic One";color:#fff;box-shadow:0 6px 0 rgba(0,0,0,.25)}
-.big{position:absolute;left:0;width:1080px;bottom:90px;text-align:center;font:400 250px/1.08 "Dela Gothic One";color:#ffd84a;letter-spacing:-4px;text-shadow:0 14px 0 #2d2a32}
+.big{position:absolute;left:0;width:1080px;bottom:90px;text-align:center;font:400 250px/1.08 "Dela Gothic One";color:#ffd84a;letter-spacing:-4px;-webkit-text-stroke:26px #2d2a32;paint-order:stroke fill;text-shadow:0 14px 0 #2d2a32}
 </style></head><body><div class="shade"></div><div class="band">パパなので。</div><div class="badge">実話</div>
 <div class="big">${lines.join("<br>")}</div></body></html>`;
 
