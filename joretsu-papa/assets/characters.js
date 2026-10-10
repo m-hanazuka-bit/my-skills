@@ -1,4 +1,4 @@
-// 家庭内序列5位パパ — キャラクター（SVG）
+// パパなので。 — キャラクター（SVG）
 // Chars.svg(id, {expr, pose, outfit}) は 200x300 の座標で描く（足元の中心 = (100, 300)）。
 // Chars.place(id, x, y, scale, opts) は足元の中心を (x, y) に置いた <g> を返す。
 (function () {

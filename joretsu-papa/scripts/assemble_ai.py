@@ -9,7 +9,7 @@ usage:
 
 plan.json:
   {
-    "title": "家庭内序列5位パパ", "badge": "実話", "badge_until": 4.0,
+    "title": "パパなので。", "badge": "実話", "badge_until": 4.0,
     "scenes": [
       {"clip": "c0.mp4", "clip_start": 0, "tail": 0.4,
        "lines": [{"id": "hook", "voice": "hook.wav", "gap": 0.2, "text": "…", "who": "パパ", "style": ""}]}
