@@ -40,23 +40,24 @@
 <script src="../../assets/characters.js"></script>
 <script>
 const C = window.Chars, INK = C.INK;
-window.EPISODE = { w: 1080, h: 1920, fps: 30, duration: 50 };
+window.EPISODE = { w: 1080, h: 1920, fps: 30, duration: 53 };
 
 // ---------- 台本（ナレーション = テロップ） ----------
 // fixed: 決め台詞（黄色いテロップ）／5番目: 話している人（省略時はパパ）
 const LINES = [
   [0, 3, "「明日履くパンツがないので、<br>帰ります。」"],
-  [3, 9, "現在、午前4時50分。<br>家族はまだ、誰も起きていません。", "fixed"],
-  [9, 14, "シャワーを浴びようとしたら、<br>パンツが、最後の1枚。"],
+  [3, 9, "現在、午後11時30分。<br>家族はもう、誰も起きていません。", "fixed"],
+  [9, 14, "風呂に入ろうとしたら、<br>パンツが、最後の1枚。"],
   [14, 18.5, "雨が3日続いた我が家。<br>洗濯の順番は、序列のとおり。"],
   [18.5, 22, "パパのパンツは、<br>いつも最後です。"],
   [22, 26, "部屋干しの場所も、<br>家族の服でいっぱい。"],
-  [26, 30, "このままでは、<br>明日履くパンツがない。"],
+  [26, 30, "次の日。このままでは、<br>明日履くパンツがない。"],
   [30, 33, "「明日履くパンツがないので、<br>帰ります。」"],
-  [33, 37, "残業を断り、会社近くの<br>コインランドリーへ。"],
-  [37, 41, "大きな乾燥機の中で、<br>パパのパンツだけが回っている。"],
-  [41, 45, "それから片道1時間半かけて、<br>家に帰った。"],
-  [45, 50, "…まあ、いいんです。<br>パパなので。", "fixed"],
+  [33, 36, "…いつも、大変ですね。", "", "後輩"],
+  [36, 40, "残業を断り、会社近くの<br>コインランドリーへ。"],
+  [40, 44, "大きな乾燥機の中で、<br>パパのパンツだけが回っている。"],
+  [44, 48, "それから片道1時間半かけて、<br>家に帰った。"],
+  [48, 53, "…まあ、いいんです。<br>パパなので。", "fixed"],
 ];
 
 // ---------- 小道具 ----------
@@ -125,10 +126,14 @@ function office(lt, t, o = {}) {
       <line x1="0" y1="0" x2="0" y2="-70" stroke="${INK}" stroke-width="6" stroke-linecap="round" transform="rotate(180)"/></g>
     ${popText(lt, o.bowAt - .6, 420, 250, "定時", { size: 64, fill: "#d6312b", stroke: "#fff", sw: 10 })}
     <rect x="0" y="800" width="1080" height="380" fill="#d9d2c4"/>
-    ${C.place("kohai", 290, 1020, 1.3, { expr: "tired", pose: "hold" })}
+    ${C.place("kohai", 290, 1020, 1.3, { expr: o.kohaiAt && lt > o.kohaiAt ? "sad" : "tired", pose: "hold" })}
     ${[160, 920].map(x => `<rect x="${x - 120}" y="780" width="240" height="40" fill="#b9a68a" stroke="${INK}" stroke-width="5"/><rect x="${x - 70}" y="640" width="140" height="110" rx="8" fill="#3a4258" stroke="${INK}" stroke-width="5"/><rect x="${x - 14}" y="750" width="28" height="30" fill="#3a4258"/>`).join("")}
     ${C.place("papa", 540, 1120, 1.9, { expr: bow > .5 ? "tired" : "normal", extra: bag })}`;
-  if (lt > o.bowAt) s += `<g transform="${T(540, 500, pop(lt, o.bowAt))}"><rect x="-470" y="-110" width="940" height="220" rx="40" fill="#fff" stroke="${INK}" stroke-width="7"/>
+  const kohaiTalk = o.kohaiAt && lt > o.kohaiAt;
+  if (kohaiTalk) s += `<g transform="${T(470, 500, pop(lt, o.kohaiAt))}"><rect x="-370" y="-90" width="740" height="180" rx="40" fill="#fff" stroke="${INK}" stroke-width="7"/>
+    <path d="M-200 86 L-220 170 L-140 86 Z" fill="#fff" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/><rect x="-212" y="74" width="80" height="20" fill="#fff"/>
+    ${txt(0, 22, "…いつも、大変ですね。", { size: 60 })}</g>`;
+  if (lt > o.bowAt && !kohaiTalk) s += `<g transform="${T(540, 500, pop(lt, o.bowAt))}"><rect x="-470" y="-110" width="940" height="220" rx="40" fill="#fff" stroke="${INK}" stroke-width="7"/>
     <path d="M-40 106 L0 190 L40 106 Z" fill="#fff" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/><rect x="-46" y="94" width="92" height="20" fill="#fff"/>
     ${txt(0, -14, "明日履くパンツがないので、", { size: 62 })}${txt(0, 72, "帰ります。", { size: 62 })}</g>`;
   if (o.badge) s += `<g transform="${T(120, 1040, 1, -12)}"><circle r="74" fill="#d6312b" stroke="#fff" stroke-width="6"/>${txt(0, 20, "実話", { size: 56, fill: "#fff", font: "var(--display)", weight: 400 })}</g>`;
@@ -144,11 +149,11 @@ scene(3, 9, (lt, t) => {
   return `<rect width="1080" height="1180" fill="#20243b"/>
     <rect x="740" y="420" width="250" height="300" rx="10" fill="#141a36" stroke="#4a4f70" stroke-width="10"/>${moon(870, 520).replace("#1a2148", "#141a36")}
     <g transform="translate(540 200)"><rect x="-280" y="-110" width="560" height="220" rx="30" fill="#0d0f18" stroke="#4a4f70" stroke-width="8"/>
-      ${txt(-205, 55, "AM", { size: 50, fill: "#7cf3a0", font: "var(--display)", weight: 400 })}
-      ${txt(55, 66, "4" + colon + "50", { size: 138, fill: "#7cf3a0", font: "var(--display)", weight: 400 })}</g>
+      ${txt(-210, 55, "PM", { size: 50, fill: "#7cf3a0", font: "var(--display)", weight: 400 })}
+      ${txt(60, 62, "11" + colon + "30", { size: 118, fill: "#7cf3a0", font: "var(--display)", weight: 400 })}</g>
     ${sleeper("tsuma", 150, 600, 0)}${sleeper("musuko", 150, 860, 1)}
-    ${C.place("papa", 580, 1150, 2.15, { outfit: "pajama", expr: "tired" })}
-    ${popText(lt, 1.6, 900, 1060, "全員就寝中", { size: 44, fill: "#fff", stroke: "#20243b", sw: 8 })}${popText(lt, .1, 540, 380, "― その日の朝 ―", { size: 46, fill: "#ffd84a" })}`;
+    ${C.place("papa", 580, 1150, 2.15, { expr: "tired", pose: "droop" })}
+    ${popText(lt, 1.6, 900, 1060, "全員就寝中", { size: 44, fill: "#fff", stroke: "#20243b", sw: 8 })}${popText(lt, .1, 540, 380, "― 前日の夜 ―", { size: 46, fill: "#ffd84a" })}`;
 });
 
 // 3. 脱衣所：替えのパンツがない
@@ -214,10 +219,10 @@ scene(22, 26, (lt, t) => {
 });
 
 // 6. 会社：定時で帰る
-scene(26, 33, (lt, t) => office(lt, t, { bowAt: 4.0 }));
+scene(26, 36, (lt, t) => office(lt, t, { bowAt: 4.0, kohaiAt: 7.0 }));
 
 // 7. コインランドリー
-scene(33, 41, (lt, t) => {
+scene(36, 44, (lt, t) => {
   const z = ease((lt - 4) / .7);
   const dryer = (x, run) => `<g transform="translate(${x} 430)"><rect x="-140" y="-150" width="280" height="300" rx="16" fill="#f7f9fb" stroke="${INK}" stroke-width="6"/>
     <circle r="104" fill="${run ? "#ffe9a8" : "#2b3550"}" stroke="${INK}" stroke-width="8"/>
@@ -235,7 +240,7 @@ scene(33, 41, (lt, t) => {
 });
 
 // 8. 夜の高速で帰宅
-scene(41, 45, (lt, t) => {
+scene(44, 48, (lt, t) => {
   let dashes = "";
   for (let i = -1; i < 7; i++) dashes += `<rect x="${((i * 200 + lt * 900) % 1400 + 1400) % 1400 - 200}" y="925" width="110" height="14" fill="#fff" opacity=".8"/>`;
   const bob = Math.sin(t * 18) * 3;
@@ -254,7 +259,7 @@ scene(41, 45, (lt, t) => {
 });
 
 // 9. パパなので（毎回同じ締め）
-scene(45, 50, (lt, t) => `<rect width="1080" height="1180" fill="#3b4058"/><ellipse cx="540" cy="760" rx="420" ry="520" fill="url(#spot)"/>
+scene(48, 53, (lt, t) => `<rect width="1080" height="1180" fill="#3b4058"/><ellipse cx="540" cy="760" rx="420" ry="520" fill="url(#spot)"/>
   <ellipse cx="540" cy="1090" rx="230" ry="40" fill="#2a2e40"/>
   ${C.place("papa", 540, 1090, 2.1, { expr: lt > 2.2 ? "cry" : "sad", pose: "droop" })}
   <g opacity="${cl(lt / .4)}">${txt(540, 170, "…まあ、いいんです。", { size: 62, fill: "#fff" })}</g>
