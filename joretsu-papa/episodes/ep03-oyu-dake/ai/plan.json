@@ -38,23 +38,133 @@
   }
  },
  "scenes": [
-  {"clip": "c0.mp4", "clip_start": 0, "tail": 0.4, "lines": [
-   {"id": "hook", "voice": "hook.wav", "gap": 0.2, "text": "パパの得意料理は、<br>お湯です。", "who": "ナレーション"}]},
-  {"clip": "c1.mp4", "clip_start": 0, "tail": 0.3, "lines": [
-   {"id": "jiho", "voice": "jiho.wav", "gap": 0.1, "text": "現在、午後11時。<br>家族はもう、誰も起きていません。", "who": "ナレーション", "style": "fixed"}]},
-  {"clip": "c2.mp4", "clip_start": 0, "tail": 0.4, "lines": [
-   {"id": "past", "voice": "past.wav", "gap": 0.2, "text": "1年前、キッチンをリフォームした。<br>最初は、炒め物も、焼き魚も作っていた。", "who": "ナレーション"}]},
-  {"clip": "c3.mp4", "clip_start": 0, "tail": 0.4, "lines": [
-   {"id": "clean", "voice": "clean.wav", "gap": 0.2, "text": "汚すたびに、掃除。少しでも汚れが<br>残っていると、怒られる。気づけば、料理禁止。", "who": "ナレーション"}]},
-  {"clip": "c4.mp4", "clip_start": 0, "tail": 0.5, "lines": [
-   {"id": "cover", "voice": "cover.wav", "gap": 0.2, "text": "グリルの排気口には、ほこりよけのカバー。<br>コンロは3口あるのに、2口にもカバー。<br>使えるのは、1口だけ。", "who": "ナレーション"}]},
-  {"clip": "c5.mp4", "clip_start": 0, "tail": 0.4, "lines": [
-   {"id": "nextday", "voice": "nextday.wav", "gap": 0.3, "text": "次の日。40代係長は、<br>30代課長に、この話をした。", "who": "ナレーション"},
-   {"id": "boss1", "voice": "boss1.wav", "gap": 0.3, "text": "先輩、リフォームしたのに<br>使えないんですか…大変ですね。", "who": "30代課長"}]},
-  {"clip": "c6.mp4", "clip_start": 0, "tail": 0.8, "lines": [
-   {"id": "boss2", "voice": "boss2.wav", "gap": 0.3, "text": "うちも先月リフォームして、<br>毎晩、僕が作ってます。", "who": "30代課長"},
-   {"id": "reply", "voice": "reply.wav", "gap": 0.5, "text": "…お湯は、沸かせます。", "who": "パパ"}]},
-  {"clip": "c7.mp4", "clip_start": 0, "tail": 1.0, "lines": [
-   {"id": "end", "voice": "end.wav", "gap": 0.5, "text": "…まあ、いいんです。<br>パパなので。", "who": "パパ", "style": "fixed"}]}
+  {
+   "clip": "c0.mp4",
+   "clip_start": 0,
+   "tail": 0.4,
+   "lines": [
+    {
+     "id": "hook",
+     "voice": "hook.wav",
+     "gap": 0.2,
+     "text": "パパの得意料理は、<br>お湯です。",
+     "who": "ナレーション"
+    }
+   ]
+  },
+  {
+   "clip": "c1.mp4",
+   "clip_start": 0,
+   "tail": 0.3,
+   "lines": [
+    {
+     "id": "jiho",
+     "voice": "jiho.wav",
+     "gap": 0.1,
+     "text": "現在、午後11時。<br>家族はもう、誰も起きていません。",
+     "who": "ナレーション",
+     "style": "fixed"
+    }
+   ]
+  },
+  {
+   "clip": "c2.mp4",
+   "clip_start": 0,
+   "tail": 0.4,
+   "lines": [
+    {
+     "id": "past",
+     "voice": "past.wav",
+     "gap": 0.2,
+     "text": "1年前、キッチンをリフォームした。<br>最初は、炒め物も、焼き魚も<br>作っていた。",
+     "who": "ナレーション"
+    }
+   ]
+  },
+  {
+   "clip": "c3.mp4",
+   "clip_start": 0,
+   "tail": 0.4,
+   "lines": [
+    {
+     "id": "clean",
+     "voice": "clean.wav",
+     "gap": 0.2,
+     "text": "汚すたびに、掃除。<br>少しでも汚れが残っていると、<br>怒られる。気づけば、料理禁止。",
+     "who": "ナレーション"
+    }
+   ]
+  },
+  {
+   "clip": "c4.mp4",
+   "clip_start": 0,
+   "tail": 0.5,
+   "lines": [
+    {
+     "id": "cover",
+     "voice": "cover.wav",
+     "gap": 0.2,
+     "text": "グリルの排気口には、<br>ほこりよけのカバー。<br>コンロは3口あるのに、<br>2口にもカバー。使えるのは、1口だけ。",
+     "who": "ナレーション"
+    }
+   ]
+  },
+  {
+   "clip": "c5.mp4",
+   "clip_start": 0,
+   "tail": 0.4,
+   "lines": [
+    {
+     "id": "nextday",
+     "voice": "nextday.wav",
+     "gap": 0.3,
+     "text": "次の日。40代係長は、<br>30代課長に、この話をした。",
+     "who": "ナレーション"
+    },
+    {
+     "id": "boss1",
+     "voice": "boss1.wav",
+     "gap": 0.3,
+     "text": "先輩、リフォームしたのに<br>使えないんですか…大変ですね。",
+     "who": "30代課長"
+    }
+   ]
+  },
+  {
+   "clip": "c6.mp4",
+   "clip_start": 0,
+   "tail": 0.8,
+   "lines": [
+    {
+     "id": "boss2",
+     "voice": "boss2.wav",
+     "gap": 0.3,
+     "text": "うちも先月リフォームして、<br>毎晩、僕が作ってます。",
+     "who": "30代課長"
+    },
+    {
+     "id": "reply",
+     "voice": "reply.wav",
+     "gap": 0.5,
+     "text": "…お湯は、沸かせます。",
+     "who": "パパ"
+    }
+   ]
+  },
+  {
+   "clip": "c7.mp4",
+   "clip_start": 0,
+   "tail": 1.0,
+   "lines": [
+    {
+     "id": "end",
+     "voice": "end.wav",
+     "gap": 0.5,
+     "text": "…まあ、いいんです。<br>パパなので。",
+     "who": "パパ",
+     "style": "fixed"
+    }
+   ]
+  }
  ]
 }
