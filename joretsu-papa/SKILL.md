@@ -121,7 +121,8 @@ description: YouTubeチャンネル「家庭内序列5位パパ」（仮）の�
    - 固定コメントの質問（例：「あなたの家でも、パパだけ後回しにされているもの、ありますか？」）
 4. ユーザーに見せて、直しがあれば反映する
 
-## 動画にする（アニメーション）
+## 動画にする（簡易版：SVGアニメ）
+本番は下の「絵（AIアニメ版）」を使う。こちらは絵コンテ・下書き用。
 キャラは `assets/characters.js`（SVG）。見た目の一覧は `assets/charsheet.png`。
 - `Chars.place(id, x, y, 倍率, {expr, pose, outfit, flip})`：全身を足元基準で置く
 - `Chars.placeHead(id, x, y, 倍率, {expr})`：顔だけ（ボードや一覧の中など）
@@ -154,16 +155,26 @@ description: YouTubeチャンネル「家庭内序列5位パパ」（仮）の�
 | 年下上司 | `e7721f8b-4e98-4949-a7de-7db1202361ce` |
 | 妻 | `b7e5ce31-b0cf-4dbd-b7cb-841507744026` |
 | 息子 | `3f97de75-7193-479a-8663-f96d0e376155` |
-- 動かすのは安いモデルから試す（例：`minimax_hailuo` の `minimax-2.3-fast` 6秒＝4クレジット、`minimax_h3` 5秒＝10クレジット）
+- 場面の絵は 9:16、キャラは画面の中央1/3に置き、上下を空ける（上にタイトル帯、下にテロップが乗る）。プロンプトに「No text, no captions, no speech bubbles」を入れる
+- 動かすのは `minimax_hailuo` の `minimax-2.3-fast`（6秒＝4クレジット）。場面の絵を `start_image` に入れ、「Keep the exact 2D hand-drawn Japanese TV anime style… Static camera… no morphing」と書いて、口パク・まばたき・小さな動きだけにする
+  - 「プリセットのおすすめ」で止められたら、`declined_preset_id` にそのIDを入れて送り直す
+- 1話（約40秒）の目安：場面の絵8枚＝2クレジット、カット8本＝32クレジット、声10本＝2クレジット
 
 ## ナレーション（音声）
-- 本命はパパ本人の声。録音できない回は Higgsfield の音声合成を使う
-  - モデル `seed_audio`、日本語男性ボイス「太郎」（preset `6b528d43-c056-4a2f-9d82-1591a7ba13b0`）。パパは `speech_rate: -5`、締めは `-10`
-  - 年下上司は同じ声で `pitch_rate: 4`、`speech_rate: 5〜10`
-  - 数字はかなで渡すと読み間違えない（例：「じゅういちじ、さんじゅっぷん」「いちまい」「みっか」）
-  - 1行0.2クレジット程度。行ごとに作り、`episode.html` の `VOICE` にファイル名と長さを書く
-- 前後の無音を切り、少し速める（`atempo` 1.15〜1.25）と、ショート向けのテンポになる
-- この作業環境から Higgsfield の配信サーバー（cloudfront）に届かない場合は、Higgsfield のサンドボックスでリポジトリを clone し、そこで `render.mjs --voice-dir` まで実行して、できた動画を Higgsfield のメディアにアップロードする
+- 本命はパパ本人の声。録音できない回は Higgsfield の `text2speech_v2`（`variant: "elevenlabs"`）を使う（ユーザーが聞き比べて決定）
+  - パパ：preset「太郎」`6b528d43-c056-4a2f-9d82-1591a7ba13b0`
+  - 年下上司：preset「Ken」`ceee41dc-0ee8-59a7-b3e8-2744116fcb5e`
+  - 数字はかなで渡すと読み間違えない（例：「じゅういちじ、さんじゅっぷん」「みっか」）
+  - 1行0.2クレジット程度。行ごとに作る
+- 作った声は faster-whisper で文字起こしして、抜けや読み間違いがないか確かめる
+- 前後の無音は音量（-40dB）で切る。ffmpeg の `silenceremove` を `areverse` と組み合わせると文の途中の間まで削れることがあるので使わない
+
+## AIアニメ版の組み立て
+- `episodes/<回>/ai/plan.json` に場面の並び（カット、カットの使い始め、行ごとの声・テロップ・話す人）を書く
+- `python scripts/assemble_ai.py --plan plan.json --clips <カット> --voice <声> --out <mp4>`
+  - 行ごとの声の長さで場面の長さが決まる。カットが足りないときは最後のコマで止めて伸ばす
+  - テロップ・タイトル帯・「実話」バッジは `scripts/caption_png.mjs`（Playwright）で PNG にして重ねる
+- この作業環境から Higgsfield の配信サーバー（cloudfront）に届かない場合は、Higgsfield のサンドボックスでリポジトリを clone し、そこで組み立てて、できた動画を Higgsfield のメディアにアップロードする
 
 ## 量産型と判定されないためのチェック
 - [ ] ネタが実話（ネタ帳の内容か、ユーザーから聞いた話）
