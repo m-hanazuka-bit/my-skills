@@ -1,0 +1,158 @@
+{
+ "title": "パパなので。",
+ "badge": "実話",
+ "badge_until": 4.0,
+ "hook": {
+  "text": "ガソリン代<br>交通費より<br>高い",
+  "until": 2.5
+ },
+ "sources": {
+  "note": "Higgsfield のジョブID。カット = minimax_hailuo（minimax-2.3-fast, 6秒）、場面の絵 = gpt_image_2_5（sunburst）、声 = text2speech_v2（elevenlabs）。ナレーション＝Emily、パパ＝太郎。締めの声は ep03 と同じものを使い回し。c3・c5 は「IN THE DARK」プリセットのおすすめで止められたので declined_preset_id を付けて送り直した",
+  "clips": {
+   "c0.mp4": "a9df87ce-b75f-404c-a5a4-d88b60a504dc",
+   "c1.mp4": "8151a478-6d93-468b-99b0-6a2ec786e901",
+   "c2.mp4": "e0743098-3fd3-40f9-86f5-7bc42f8daa7f",
+   "c3.mp4": "3010bbfa-92c0-4275-9c42-c184850e4a8d",
+   "c4.mp4": "5fbafb2f-c02a-4c4a-8811-f708c30cc5f0",
+   "c5.mp4": "6ddfaba4-b76a-49a2-b32f-4d8a112449fe",
+   "c6.mp4": "e1ab83c5-e025-4498-a148-1f8f3cc82efb",
+   "c7.mp4": "d1fb4265-cb84-49c4-9a90-2b8ea58c3182"
+  },
+  "keyframes": [
+   "66bfa95a-622c-4b74-a6ac-cde016805c23",
+   "0376280c-9c3c-42a1-bf60-fab8f965063b",
+   "98368c9d-dcd2-4e85-9bfa-ba5d75ee1c97",
+   "da2f091a-93c5-4ce9-b615-153b8476484b",
+   "e56ac138-d1fb-49ed-b485-eac74954ad1f",
+   "3235000a-b6c5-4ace-94fe-041deb24bb64",
+   "5e016723-f285-4c9b-bea0-7609ef612daa",
+   "b2f38124-7292-433b-a648-64e67e706d61"
+  ],
+  "voice": {
+   "hook.wav": "02a59cde-8a6d-4a16-8349-22d013fedd65",
+   "jiho.wav": "21f8dda6-31b5-4e60-9ac9-3ddcfc3b82b7",
+   "want.wav": "fb668e78-2b7e-4e4b-8b25-e8afb881ff58",
+   "kei.wav": "c993e9b7-1d63-4aec-9f51-e9e705e2c0e9",
+   "commute.wav": "4549ef0a-24e9-4c92-9318-2df2f662efab",
+   "ochi.wav": "0d32fa95-7370-4186-b766-71dd82177844",
+   "norikae.wav": "e8c2fde1-0cba-4a98-bd30-3ba699b7d0bb",
+   "end.wav": "3619e885-b2dc-4f86-b928-80ec3fe4a4c3"
+  }
+ },
+ "scenes": [
+  {
+   "clip": "c0.mp4",
+   "clip_start": 0,
+   "tail": 0.4,
+   "lines": [
+    {
+     "id": "hook",
+     "voice": "hook.wav",
+     "gap": 0.0,
+     "text": "パパの通勤。<br>ガソリン代が、交通費より、高い。",
+     "who": "ナレーション"
+    }
+   ]
+  },
+  {
+   "clip": "c1.mp4",
+   "clip_start": 0,
+   "tail": 0.3,
+   "lines": [
+    {
+     "id": "jiho",
+     "voice": "jiho.wav",
+     "gap": 0.1,
+     "text": "現在、午前5時50分。<br>本社まで、高速で、片道1時間半。",
+     "who": "ナレーション",
+     "style": "fixed"
+    }
+   ]
+  },
+  {
+   "clip": "c2.mp4",
+   "clip_start": 0,
+   "tail": 0.3,
+   "lines": [
+    {
+     "id": "want",
+     "voice": "want.wav",
+     "gap": 0.2,
+     "text": "このミニバン、<br>妻が「欲しい」と言って、買った車。",
+     "who": "ナレーション"
+    }
+   ]
+  },
+  {
+   "clip": "c3.mp4",
+   "clip_start": 0,
+   "tail": 0.3,
+   "lines": [
+    {
+     "id": "kei",
+     "voice": "kei.wav",
+     "gap": 0.2,
+     "text": "でも、義父が軽自動車を買ってから、<br>誰も乗らなくなった。",
+     "who": "ナレーション"
+    }
+   ]
+  },
+  {
+   "clip": "c4.mp4",
+   "clip_start": 0,
+   "tail": 0.3,
+   "lines": [
+    {
+     "id": "commute",
+     "voice": "commute.wav",
+     "gap": 0.2,
+     "text": "燃費の悪いミニバンで、<br>毎日1人、往復3時間。",
+     "who": "ナレーション"
+    }
+   ]
+  },
+  {
+   "clip": "c5.mp4",
+   "clip_start": 0,
+   "tail": 0.4,
+   "lines": [
+    {
+     "id": "ochi",
+     "voice": "ochi.wav",
+     "gap": 0.3,
+     "text": "妻が選んだ車に、<br>一番乗っているのは、パパです。",
+     "who": "ナレーション"
+    }
+   ]
+  },
+  {
+   "clip": "c6.mp4",
+   "clip_start": 0,
+   "tail": 0.6,
+   "lines": [
+    {
+     "id": "norikae",
+     "voice": "norikae.wav",
+     "gap": 0.3,
+     "text": "…そろそろ、燃費のいい車に、<br>乗り換えようかな。",
+     "who": "パパ"
+    }
+   ]
+  },
+  {
+   "clip": "c7.mp4",
+   "clip_start": 0,
+   "tail": 1.0,
+   "lines": [
+    {
+     "id": "end",
+     "voice": "end.wav",
+     "gap": 0.5,
+     "text": "…まあ、いいんです。<br>パパなので。",
+     "who": "パパ",
+     "style": "fixed"
+    }
+   ]
+  }
+ ]
+}
