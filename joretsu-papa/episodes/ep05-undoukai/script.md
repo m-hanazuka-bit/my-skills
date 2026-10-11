@@ -55,5 +55,5 @@
   - A：Hana `c25f78a0-714e-42af-8da3-a399cef94968`（若め）→ ジョブ `10bcc5d6-8414-4b42-9153-e917e252d091`
   - B：Naomi `caeba733-3c17-43db-863e-69c7025512cd`（中年）→ ジョブ `947876c7-d167-43f5-a3cb-d604f3dceb90`
   - C：Vera `0c51919f-0756-5f8d-8169-026a339d8fd7`（中年、ゆっくり）→ ジョブ `72b20660-d7d7-48f9-9d06-8abb77c549e0`
-- 妻の声は C の Vera に決定（ユーザー）。ElevenLabs は外国人っぽいイントネーションと言われたので、同じ Vera で別のエンジンも作った：MiniMax `df34dbdd-1317-419b-82bb-7eeccd2434a6`、Seed Speech `00e0b3cc-134e-4c36-9af4-62ef9fe926f8`（どれにするか聞き比べ中）
+- 妻の声は C の Vera に決定（ユーザー）。ElevenLabs は外国人っぽいイントネーションと言われたので、同じ Vera で別のエンジンも作った：MiniMax `df34dbdd-1317-419b-82bb-7eeccd2434a6`、Seed Speech `00e0b3cc-134e-4c36-9af4-62ef9fe926f8`→ 聞き比べて ElevenLabs（`72b20660-d7d7-48f9-9d06-8abb77c549e0`）に決定
 - 運動会のスピーカーの声（その場かぎり）：Kevin `f1373f24-3b96-433f-9a68-e595810ef608` → ジョブ `e1717ea6-0c16-4ec1-8138-820424e0b028`
